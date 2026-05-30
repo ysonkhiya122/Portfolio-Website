@@ -1,27 +1,6 @@
-# Yash Sonkhiya — Portfolio v2
+# Yash Sonkhiya — Portfolio
 
 **React 18 · TypeScript · SCSS Modules · Framer Motion · Vite 5**
-
-## What's inside
-
-| Component           | Feature                                                     |
-|---------------------|-------------------------------------------------------------|
-| `CustomCursor`      | Magnetic dot + lagging ring cursor with hover states        |
-| `TypewriterText`    | Multi-phrase typewriter with natural easing                 |
-| `AnimatedCounter`   | Scroll-triggered count-up with easeOutQuart                 |
-| `SkillSphere`       | 3D rotating Fibonacci sphere (pure CSS 3D transforms, zero deps) |
-| `CommandPalette`    | ⌘K navigation modal with keyboard arrows + search          |
-| `OpenToWork`        | Pulsing availability badge                                  |
-| `ScrollLine`        | Top scroll-progress indicator                               |
-| `Nav`               | Scroll-aware blur nav with ⌘K hint                         |
-| `Hero`              | Staggered motion, typewriter role, animated counters        |
-| `About`             | Prose + live metrics panel + callout                        |
-| `Experience`        | Animated vertical timeline with motion fill                 |
-| `Projects`          | Featured + professional work grid                           |
-| `Skills`            | Grouped list + 3D sphere side by side                      |
-| `Achievements`      | Recognition list with hover                                 |
-| `Education`         | Clean two-column layout                                     |
-| `Contact`           | Side-by-side CTA + link cards                               |
 
 ## Quick start
 
@@ -49,7 +28,3 @@ npm run lint       # eslint
 - **Data-driven** — all content in `src/data/portfolio.ts`; update once, reflects everywhere
 - **Zero-dep 3D sphere** — Fibonacci sphere algorithm + CSS 3D transforms, no Three.js
 - **⌘K palette** — full keyboard navigation (arrows, enter, esc)
-
-## Deploy to Vercel
-
-Push to GitHub → Import in vercel.com → zero config, auto-detects Vite.
