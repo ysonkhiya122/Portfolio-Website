@@ -1,0 +1,109 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: $c-border;
+  border: 1px solid $c-border;
+  border-radius: 8px;
+  overflow: hidden;
+
+  @media (max-width: $bp-mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: $c-bg-card;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: background $transition-base;
+
+  &:hover {
+    background: $c-bg-3;
+  }
+
+  &.featured {
+    grid-column: 1 / -1;
+
+    @media (max-width: $bp-mobile) {
+      grid-column: auto;
+    }
+  }
+}
+
+.number {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: $c-text-muted;
+  font-family: $font-mono;
+}
+
+.name {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: $c-text-primary;
+}
+
+.subtitle {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: $c-text-muted;
+}
+
+.desc {
+  font-size: 14px;
+  line-height: 1.65;
+  color: $c-text-secondary;
+  flex: 1;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.footer {
+  margin-top: 8px;
+}
+
+.links {
+  display: flex;
+  gap: 20px;
+}
+
+.link {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: $c-text-secondary;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: color $transition-base;
+
+  &:hover {
+    color: $c-text-primary;
+
+    .arrow {
+      transform: translate(2px, -2px);
+    }
+  }
+}
+
+.arrow {
+  font-size: 14px;
+  transition: transform $transition-base;
+}
+
+.note {
+  font-size: 12px;
+  color: $c-text-muted;
+}

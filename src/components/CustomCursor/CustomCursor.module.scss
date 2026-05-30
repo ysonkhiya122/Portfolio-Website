@@ -1,0 +1,44 @@
+.dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: $c-text-primary;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+  transition: width 0.2s $transition-spring,
+              height 0.2s $transition-spring,
+              background 0.2s ease;
+
+  &.hovered {
+    width: 8px;
+    height: 8px;
+    background: $c-text-primary;
+  }
+}
+
+.ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(238, 236, 232, 0.35);
+  pointer-events: none;
+  z-index: 9998;
+  will-change: transform;
+  transition: width 0.25s $transition-spring,
+              height 0.25s $transition-spring,
+              border-color 0.2s ease,
+              opacity 0.2s ease;
+
+  &.hovered {
+    width: 48px;
+    height: 48px;
+    border-color: rgba(238, 236, 232, 0.55);
+  }
+}

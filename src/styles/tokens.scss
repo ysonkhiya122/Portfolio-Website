@@ -1,0 +1,52 @@
+// ─── DESIGN TOKENS ──────────────────────────────────────────────
+$c-bg:       #09090a;
+$c-bg-2:     #0f0f11;
+$c-bg-3:     #161618;
+$c-bg-card:  #111113;
+$c-bg-glass: rgba(15, 15, 17, 0.72);
+
+$c-border:    rgba(255, 255, 255, 0.06);
+$c-border-md: rgba(255, 255, 255, 0.10);
+$c-border-hi: rgba(255, 255, 255, 0.20);
+
+$c-text-primary:   #eeece8;
+$c-text-secondary: #8f8e8a;
+$c-text-muted:     #525150;
+$c-accent:         #e2ddd5;
+$c-highlight:      #ccc8bf;
+
+$c-green:        #3a9971;
+$c-green-bg:     rgba(58, 153, 113, 0.08);
+$c-green-border: rgba(58, 153, 113, 0.18);
+$c-blue:         #6a93c7;
+$c-blue-bg:      rgba(106, 147, 199, 0.08);
+$c-blue-border:  rgba(106, 147, 199, 0.18);
+$c-amber:        #b89a5e;
+$c-amber-bg:     rgba(184, 154, 94, 0.08);
+
+$c-cursor: #eeece8;
+$c-tag-bg:     rgba(255, 255, 255, 0.04);
+$c-tag-border: rgba(255, 255, 255, 0.08);
+
+$font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+$font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+$nav-height:    60px;
+$container-max: 1000px;
+$container-pad: 5vw;
+
+$space-xs:  8px;
+$space-sm:  12px;
+$space-md:  20px;
+$space-lg:  32px;
+$space-xl:  48px;
+$space-2xl: 64px;
+$space-3xl: 80px;
+$space-4xl: 120px;
+
+$bp-mobile: 700px;
+$bp-tablet: 900px;
+
+$transition-base:   0.2s ease;
+$transition-slow:   0.5s ease;
+$transition-spring: cubic-bezier(0.34, 1.56, 0.64, 1);

@@ -1,0 +1,58 @@
+.achievements {
+  // inherits .section-base
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: $c-border;
+  border: 1px solid $c-border;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.item {
+  background: $c-bg-card;
+  padding: 24px 28px;
+  display: flex;
+  align-items: flex-start;
+  gap: $space-md;
+  transition: background $transition-base;
+
+  &:hover {
+    background: $c-bg-3;
+  }
+}
+
+.icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  background: $c-bg-3;
+  border: 1px solid $c-border-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 14px;
+  font-family: $font-mono;
+  color: $c-text-secondary;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 500;
+  color: $c-text-primary;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: $c-text-secondary;
+}

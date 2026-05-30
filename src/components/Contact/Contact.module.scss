@@ -1,0 +1,113 @@
+.inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+
+  @media (max-width: $bp-mobile) {
+    grid-template-columns: 1fr;
+    gap: $space-xl;
+  }
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.heading {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: $c-text-primary;
+}
+
+.sub {
+  font-size: 15px;
+  line-height: 1.7;
+  color: $c-text-secondary;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  gap: 1px;
+  background: $c-border;
+  border: 1px solid $c-border;
+  text-decoration: none;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.link {
+  background: $c-bg-card;
+  padding: 16px 20px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background $transition-base;
+
+  &:hover {
+    background: $c-bg-3;
+  }
+
+  &Static {
+    cursor: default;
+  }
+}
+
+.linkLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.linkIcon {
+  width: 32px;
+  height: 32px;
+  background: $c-bg-3;
+  border: 1px solid $c-border-md;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: $c-text-secondary;
+  flex-shrink: 0;
+  font-family: $font-mono;
+}
+
+.linkLabel {
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  color: $c-text-primary;
+}
+
+.linkValue {
+  font-size: 12px;
+  color: $c-text-secondary;
+  text-decoration: none;
+}
+
+.linkArrow {
+  font-size: 16px;
+  color: $c-text-muted;
+  transition: transform $transition-base;
+  text-decoration: none;
+
+  .link:hover & {
+    transform: translate(2px, -2px);
+  }
+}

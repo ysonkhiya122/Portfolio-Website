@@ -1,0 +1,147 @@
+@use "tokens" as *;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  cursor: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: $c-bg;
+  color: $c-text-primary;
+  font-family: $font-sans;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+a,
+button {
+  cursor: none;
+}
+img {
+  display: block;
+  max-width: 100%;
+}
+ul,
+ol {
+  list-style: none;
+}
+button {
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+// ─── CONTAINER ──────────────────────────────────────────────────
+.container {
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: 0 $container-pad;
+}
+
+// ─── SECTION ────────────────────────────────────────────────────
+.section-base {
+  padding: $space-3xl 0;
+  border-top: 1px solid $c-border;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: $space-xl;
+
+  &__index {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $c-text-muted;
+    font-family: $font-mono;
+  }
+
+  &__title {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: $c-text-primary;
+  }
+}
+
+// ─── BUTTONS ────────────────────────────────────────────────────
+.btn-primary {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: $c-bg;
+  background: $c-text-primary;
+  padding: 11px 24px;
+  border-radius: 4px;
+  transition: opacity $transition-base;
+  text-decoration: none;
+
+  &:hover {
+    opacity: 0.86;
+  }
+}
+
+.btn-ghost {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: $c-text-primary;
+  background: transparent;
+  border: 1px solid $c-border-md;
+  padding: 11px 24px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition:
+    color $transition-base,
+    border-color $transition-base;
+  transition:
+    background $transition-base,
+    border-color $transition-base;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: $c-border-hi;
+  }
+}
+
+// ─── TAGS ───────────────────────────────────────────────────────
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: $c-text-muted;
+  background: $c-tag-bg;
+  border: 1px solid $c-tag-border;
+  padding: 4px 10px;
+  border-radius: 3px;
+}
+
+// ─── REVEAL ANIMATION ───────────────────────────────────────────
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity $transition-slow,
+    transform $transition-slow;
+
+  &.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
