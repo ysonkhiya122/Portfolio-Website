@@ -28,6 +28,7 @@
   font-weight: 500;
   letter-spacing: 0.04em;
   color: $c-text-primary;
+  text-decoration: none;
 
   span {
     color: $c-text-muted;
@@ -98,4 +99,184 @@
     background: rgba(255, 255, 255, 0.05);
     border-color: $c-border-hi;
   }
+
+  @media (max-width: $bp-mobile) {
+    display: none;
+  }
+}
+
+// ─── HAMBURGER ──────────────────────────────────────────────────
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  padding: 6px;
+  border: 1px solid $c-border-md;
+  border-radius: 6px;
+  background: transparent;
+  transition: background $transition-base, border-color $transition-base;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: $c-border-hi;
+  }
+
+  @media (max-width: $bp-mobile) {
+    display: flex;
+  }
+}
+
+.hamburgerLine {
+  display: block;
+  width: 100%;
+  height: 1.5px;
+  background: $c-text-primary;
+  border-radius: 1px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform-origin: center;
+
+  .hamburgerOpen & {
+    &:nth-child(1) {
+      transform: translateY(6.5px) rotate(45deg);
+    }
+    &:nth-child(2) {
+      opacity: 0;
+    }
+    &:nth-child(3) {
+      transform: translateY(-6.5px) rotate(-45deg);
+    }
+  }
+}
+
+// ─── MOBILE OVERLAY ─────────────────────────────────────────────
+
+.mobileOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+// ─── MOBILE DRAWER ──────────────────────────────────────────────
+
+.mobileDrawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 200;
+  width: min(320px, 85vw);
+  background: $c-bg-2;
+  border-left: 1px solid $c-border;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.mobileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid $c-border;
+  min-height: $nav-height;
+}
+
+.mobileLogo {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: $c-text-primary;
+
+  span {
+    color: $c-text-muted;
+  }
+}
+
+.mobileClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid $c-border-md;
+  border-radius: 6px;
+  color: $c-text-secondary;
+  background: transparent;
+  transition: background $transition-base, border-color $transition-base;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: $c-border-hi;
+    color: $c-text-primary;
+  }
+}
+
+.mobileLinks {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px;
+  gap: 4px;
+}
+
+.mobileLink {
+  display: block;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: $c-text-secondary;
+  text-decoration: none;
+  padding: 14px 16px;
+  border-radius: 8px;
+  transition: color $transition-base, background $transition-base;
+
+  &:hover {
+    color: $c-text-primary;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  &:active {
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+
+.mobileFooter {
+  padding: 20px;
+  border-top: 1px solid $c-border;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobileCta {
+  display: block;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $c-bg;
+  background: $c-text-primary;
+  padding: 12px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: opacity $transition-base;
+
+  &:hover {
+    opacity: 0.88;
+  }
+}
+
+.mobileNote {
+  font-size: 11px;
+  color: $c-text-muted;
+  text-align: center;
+  letter-spacing: 0.02em;
 }

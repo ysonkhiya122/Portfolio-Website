@@ -1,6 +1,11 @@
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useState } from 'react'
 import styles from './CustomCursor.module.scss'
 
+/**
+ * CustomCursor — only rendered on pointer (mouse) devices.
+ * Touch/tablet users never see it; the default system cursor remains.
+ * Respects prefers-reduced-motion by disabling the lerp animation.
+ */
 export default function CustomCursor() {
   const dotRef   = useRef<HTMLDivElement>(null)
   const ringRef  = useRef<HTMLDivElement>(null)
@@ -9,11 +14,38 @@ export default function CustomCursor() {
   const rafId    = useRef<number>(0)
   const hovering = useRef(false)
 
+  // Only render on devices with a fine pointer (mouse)
+  const [isPointerDevice, setIsPointerDevice] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(pointer: fine)')
+    setIsPointerDevice(mq.matches)
+
+    const handleChange = (e: MediaQueryListEvent) => setIsPointerDevice(e.matches)
+    mq.addEventListener('change', handleChange)
+    return () => mq.removeEventListener('change', handleChange)
+  }, [])
+
+  const prefersReducedMotion = useRef(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    prefersReducedMotion.current = mq.matches
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotion.current = e.matches
+    }
+    mq.addEventListener('change', handleChange)
+    return () => mq.removeEventListener('change', handleChange)
+  }, [])
+
   const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 
   const animate = useCallback(() => {
-    ring.current.x = lerp(ring.current.x, pos.current.x, 0.12)
-    ring.current.y = lerp(ring.current.y, pos.current.y, 0.12)
+    const lerpFactor = prefersReducedMotion.current ? 1 : 0.12
+
+    ring.current.x = lerp(ring.current.x, pos.current.x, lerpFactor)
+    ring.current.y = lerp(ring.current.y, pos.current.y, lerpFactor)
 
     if (dotRef.current) {
       dotRef.current.style.transform =
@@ -27,6 +59,8 @@ export default function CustomCursor() {
   }, [])
 
   useEffect(() => {
+    if (!isPointerDevice) return
+
     const onMove = (e: MouseEvent) => {
       pos.current = { x: e.clientX, y: e.clientY }
     }
@@ -66,7 +100,10 @@ export default function CustomCursor() {
       cancelAnimationFrame(rafId.current)
       observer.disconnect()
     }
-  }, [animate])
+  }, [isPointerDevice, animate])
+
+  // Don't render on touch/tablet devices
+  if (!isPointerDevice) return null
 
   return (
     <>
