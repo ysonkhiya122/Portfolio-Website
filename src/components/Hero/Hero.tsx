@@ -33,7 +33,7 @@ const item = {
 };
 
 export default function Hero() {
-  const anchor = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+  const anchor = (e: React.MouseEvent<HTMLElement>, id: string) => {
     e.preventDefault();
     document
       .querySelector(id)
