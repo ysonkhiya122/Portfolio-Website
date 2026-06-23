@@ -67,8 +67,6 @@ export default function SkillSphere() {
 
     // Track mouse movement across entire window for better interaction
     const onGlobalMouseMove = (e: MouseEvent) => {
-      const rect  = container.getBoundingClientRect()
-      
       // Calculate normalized coordinates (-1 to 1) based on viewport center
       const centerX = window.innerWidth / 2
       const centerY = window.innerHeight / 2
