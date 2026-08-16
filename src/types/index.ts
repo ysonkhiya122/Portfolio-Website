@@ -52,6 +52,12 @@ export interface EducationItem {
   location: string
 }
 
+export interface Stat {
+  value: number
+  suffix: string
+  label: string
+}
+
 export interface ContactLink {
   id: string
   label: string

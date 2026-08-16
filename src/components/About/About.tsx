@@ -1,12 +1,7 @@
 import { useReveal } from '@/hooks/useReveal'
 import AnimatedCounter from '@/components/AnimatedCounter/AnimatedCounter'
+import { aboutMetrics } from '@/data/portfolio'
 import styles from './About.module.scss'
-
-const METRICS = [
-  { value: 500, suffix: '+', label: 'Daily active users served' },
-  { value: 15,  suffix: '%', label: 'Dev overhead reduction QoQ' },
-  { value: 18,  suffix: ' mo', label: 'To Senior SWE promotion' },
-]
 
 const TAGS = [
   'React 16–19', 'TypeScript', 'Redux Toolkit', 'SignalR',
@@ -56,7 +51,7 @@ export default function About() {
           <div className={`reveal ${styles.metricsCol}`} style={{ transitionDelay: '0.12s' }}>
             <p className={styles.metricsLabel}>Impact at a glance</p>
             <div className={styles.metrics}>
-              {METRICS.map((m) => (
+              {aboutMetrics.map((m) => (
                 <div key={m.label} className={styles.metric}>
                   <span className={styles.metricValue}>
                     <AnimatedCounter value={m.value} suffix={m.suffix} duration={1400} />

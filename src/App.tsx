@@ -1,10 +1,16 @@
+import { lazy, Suspense } from 'react'
 import Nav from '@/components/Nav/Nav'
 import ScrollLine from '@/components/ScrollLine/ScrollLine'
 import Footer from '@/components/Footer/Footer'
 import CustomCursor from '@/components/CustomCursor/CustomCursor'
-import CommandPalette from '@/components/CommandPalette/CommandPalette'
 import Home from '@/pages/Home'
 import '@/styles/globals.scss'
+
+// The palette is idle until the user presses Cmd/Ctrl+K — split it out
+// of the critical bundle.
+const CommandPalette = lazy(
+  () => import('@/components/CommandPalette/CommandPalette')
+)
 
 export default function App() {
   return (
@@ -17,7 +23,9 @@ export default function App() {
       <Nav />
       <Home />
       <Footer />
-      <CommandPalette />
+      <Suspense fallback={null}>
+        <CommandPalette />
+      </Suspense>
     </>
   )
 }

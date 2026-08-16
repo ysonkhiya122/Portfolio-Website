@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import TypewriterText from "@/components/TypewriterText/TypewriterText";
 import AnimatedCounter from "@/components/AnimatedCounter/AnimatedCounter";
 import OpenToWork from "@/components/OpenToWork/OpenToWork";
+import { heroStats } from "@/data/portfolio";
 import styles from "./Hero.module.scss";
 
 const ROLES = [
@@ -9,13 +10,6 @@ const ROLES = [
   "React & TypeScript Specialist",
   "Enterprise UI Architect",
   "GenAI-augmented Developer",
-];
-
-const STATS = [
-  { value: 2, suffix: "+", label: "Years exp.", decimals: 0 },
-  { value: 4, suffix: "", label: "Production apps", decimals: 0 },
-  { value: 7, suffix: "", label: "Countries live", decimals: 0 },
-  { value: 40, suffix: "%", label: "Defect reduction", decimals: 0 },
 ];
 
 const container = {
@@ -97,7 +91,7 @@ export default function Hero() {
           </motion.div>
 
           <motion.div className={styles.stats} variants={item}>
-            {STATS.map((s) => (
+            {heroStats.map((s) => (
               <div key={s.label} className={styles.stat}>
                 <span className={styles.statValue}>
                   <AnimatedCounter
