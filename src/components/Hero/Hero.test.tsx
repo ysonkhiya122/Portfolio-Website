@@ -9,14 +9,17 @@ describe('Hero', () => {
 
   it('renders the availability indicator', () => {
     render(<Hero />)
-    expect(screen.getByText(/open to opportunities/i)).toBeInTheDocument()
+    expect(screen.getByText(/open to work/i)).toBeInTheDocument()
   })
 
-  it('renders all three stat values', () => {
+  it('renders all four stat labels', () => {
     render(<Hero />)
-    expect(screen.getByText('2+')).toBeInTheDocument()
-    expect(screen.getByText('4')).toBeInTheDocument()
-    expect(screen.getByText('7')).toBeInTheDocument()
+    // Counter values animate from 0 via IntersectionObserver (mocked in
+    // jsdom), so assert on the stable labels rather than animated numbers.
+    expect(screen.getByText('Years exp.')).toBeInTheDocument()
+    expect(screen.getByText('Production apps')).toBeInTheDocument()
+    expect(screen.getByText('Countries live')).toBeInTheDocument()
+    expect(screen.getByText('Defect reduction')).toBeInTheDocument()
   })
 
   it('renders both CTA links', () => {
