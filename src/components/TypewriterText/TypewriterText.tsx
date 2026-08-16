@@ -22,8 +22,12 @@ export default function TypewriterText({
   const [phase, setPhase]         = useState<Phase>('typing')
   const phraseIdx = useRef(0)
   const charIdx   = useRef(0)
+  const reducedMotion =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   useEffect(() => {
+    if (reducedMotion) return
     const current = phrases[phraseIdx.current]
 
     if (phase === 'typing') {
@@ -55,12 +59,21 @@ export default function TypewriterText({
         setPhase('typing')
       }
     }
-  }, [phase, displayed, phrases, typingSpeed, deletingSpeed, pauseDuration])
+  }, [phase, displayed, phrases, typingSpeed, deletingSpeed, pauseDuration, reducedMotion])
+
+  // Static fallback for users who prefer reduced motion.
+  if (reducedMotion) {
+    return <span className={`${styles.wrapper} ${className}`}>{phrases[0]}</span>
+  }
 
   return (
     <span className={`${styles.wrapper} ${className}`}>
-      {displayed}
-      <span className={styles.caret} aria-hidden="true" />
+      {/* Screen readers get a stable label; the animated text is decorative. */}
+      <span className="sr-only">{phrases[0]}</span>
+      <span aria-hidden="true">
+        {displayed}
+        <span className={styles.caret} />
+      </span>
     </span>
   )
 }

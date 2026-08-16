@@ -38,6 +38,13 @@ export default function AnimatedCounter({
 
   useEffect(() => {
     if (!started) return
+
+    // Respect reduced-motion: show the final value immediately.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setCount(value)
+      return
+    }
+
     const start     = performance.now()
     let rafId: number
 

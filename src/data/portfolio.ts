@@ -58,17 +58,17 @@ export const experience: ExperienceItem[] = [
 
 export const projects: Project[] = [
   {
-    id: 'raceiq',
+    id: 'apexon',
     number: 'Featured — 001',
     label: 'Personal Project',
-    name: 'RaceIQ',
-    subtitle: 'F1 Intelligence Dashboard',
+    name: 'ApexOn',
+    subtitle: 'Formula 1 Digital Platform',
     description:
-      'An AI-powered Formula 1 analytics platform combining live race data with historical records. Users ask plain-English questions and receive AI-generated insights backed by dynamic charts — driver comparisons, constructor standings, and lap-time visualisations.',
-    tags: ['React 18', 'TypeScript', 'OpenAI API', 'React Query', 'Recharts', 'Tailwind CSS', 'Vercel'],
+      'A modern Formula 1 platform for beginners and hardcore fans alike — schedules, results, rules, and history combined with team radio, AI assistance, and interactive fan experiences.',
+    tags: ['React', 'TypeScript', 'AI Assistant', 'REST APIs', 'Netlify'],
     links: [
-      { label: 'GitHub', href: 'https://github.com/ysonkhiya122' },
-      { label: 'Live demo', href: '#' },
+      { label: 'GitHub', href: 'https://github.com/ysonkhiya122/ApexOn' },
+      { label: 'Live demo', href: 'https://apexon.netlify.app/' },
     ],
     featured: true,
   },

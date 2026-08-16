@@ -111,17 +111,18 @@ export default function Hero() {
             ))}
           </motion.div>
 
-          <motion.div
+          <motion.button
+            type="button"
             className={styles.scrollCue}
             variants={item}
-            aria-hidden="false"
-            aria-label="Scroll down to see more"
-            role="button"
+            aria-label="Scroll down to the About section"
             onClick={(e) => anchor(e, "#about")}
           >
-            <div className={styles.scrollLine} />
-            <span className={styles.scrollLabel}>scroll</span>
-          </motion.div>
+            <div className={styles.scrollLine} aria-hidden="true" />
+            <span className={styles.scrollLabel} aria-hidden="true">
+              scroll
+            </span>
+          </motion.button>
         </motion.div>
       </div>
     </section>

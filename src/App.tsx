@@ -1,4 +1,3 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Nav from '@/components/Nav/Nav'
 import ScrollLine from '@/components/ScrollLine/ScrollLine'
 import Footer from '@/components/Footer/Footer'
@@ -9,15 +8,16 @@ import '@/styles/globals.scss'
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <>
+      <a href="#about" className="skip-link">
+        Skip to content
+      </a>
       <CustomCursor />
       <ScrollLine />
       <Nav />
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
+      <Home />
       <Footer />
       <CommandPalette />
-    </BrowserRouter>
+    </>
   )
 }

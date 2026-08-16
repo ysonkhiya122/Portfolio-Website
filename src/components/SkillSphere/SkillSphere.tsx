@@ -53,6 +53,10 @@ export default function SkillSphere() {
     const container = containerRef.current
     if (!container) return
 
+    const reducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches
+
     // Initialise tag data
     tagsRef.current = SKILLS.map((text, i) => ({
       text,
@@ -170,9 +174,34 @@ export default function SkillSphere() {
       rafId.current = requestAnimationFrame(tick)
     }
 
-    rafId.current = requestAnimationFrame(tick)
+    if (reducedMotion) {
+      // Render one static frame — no continuous animation.
+      const frame = tick
+      const id = requestAnimationFrame(() => {
+        frame()
+        cancelAnimationFrame(rafId.current)
+      })
+      return () => cancelAnimationFrame(id)
+    }
+
+    // Only run the animation loop while the sphere is on screen.
+    let visible = false
+    const visibility = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !visible) {
+          visible = true
+          rafId.current = requestAnimationFrame(tick)
+        } else if (!entry.isIntersecting && visible) {
+          visible = false
+          cancelAnimationFrame(rafId.current)
+        }
+      },
+      { threshold: 0.05 }
+    )
+    visibility.observe(container)
 
     return () => {
+      visibility.disconnect()
       cancelAnimationFrame(rafId.current)
       window.removeEventListener('mousemove', onGlobalMouseMove)
       container.removeEventListener('mouseenter', onMouseEnter)
