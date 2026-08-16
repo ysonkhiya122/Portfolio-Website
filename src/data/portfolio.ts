@@ -5,7 +5,24 @@ import type {
   Achievement,
   EducationItem,
   ContactLink,
+  Stat,
 } from '@/types'
+
+// ─── HEADLINE STATS ─────────────────────────────────────────────
+// Single source of truth for every animated number on the page.
+
+export const heroStats: Stat[] = [
+  { value: 2,  suffix: '+',  label: 'Years exp.' },
+  { value: 4,  suffix: '',   label: 'Production apps' },
+  { value: 7,  suffix: '',   label: 'Countries live' },
+  { value: 40, suffix: '%',  label: 'Defect reduction' },
+]
+
+export const aboutMetrics: Stat[] = [
+  { value: 500, suffix: '+',   label: 'Daily active users served' },
+  { value: 15,  suffix: '%',   label: 'Dev overhead reduction QoQ' },
+  { value: 18,  suffix: ' mo', label: 'To Senior SWE promotion' },
+]
 
 // ─── EXPERIENCE ─────────────────────────────────────────────────
 // Client and internal project names are intentionally generalised.
@@ -25,12 +42,12 @@ export const experience: ExperienceItem[] = [
     summary:
       'Lead frontend engineer across four production React + TypeScript applications for a major European enterprise client operating across seven countries.',
     bullets: [
-      'Architected and delivered a <strong>real-time field-service dispatch platform</strong> with SignalR WebSocket job updates, interactive map integration, and SLA timers — serving 500–700 daily active users across seven European markets simultaneously.',
-      'Led a <strong>React 16-to-19 migration</strong> on two enterprise applications: resolved breaking changes, refactored to modern hooks and concurrent patterns, and raised Jest coverage — zero production regressions on delivery.',
-      'Sole frontend engineer on an <strong>internal asset management tool</strong>: designed UX flows, built a reusable component library, guided backend API contracts for production scale, and shipped the complete frontend in 15 days.',
-      'Implemented <strong>enterprise SSO, Redux Toolkit state management, Firebase</strong>, code splitting, and performance optimisation across the full application portfolio.',
-      'Engineered <strong>GenAI-assisted development workflows</strong> (GitHub Copilot, ChatGPT, Claude) for automated test generation and migration analysis — reducing dev overhead by 15% QoQ and code-breaking incidents by 40%. Workflow presented internally as an engineering innovation.',
-      'Recognised with a <strong>2-star top-performer rating</strong> (Jan 2026) and promoted to Senior SWE in April 2026 at 18 months — above the average pace for the band.',
+      'Architected and delivered a **real-time field-service dispatch platform** with SignalR WebSocket job updates, interactive map integration, and SLA timers — serving 500–700 daily active users across seven European markets simultaneously.',
+      'Led a **React 16-to-19 migration** on two enterprise applications: resolved breaking changes, refactored to modern hooks and concurrent patterns, and raised Jest coverage — zero production regressions on delivery.',
+      'Sole frontend engineer on an **internal asset management tool**: designed UX flows, built a reusable component library, guided backend API contracts for production scale, and shipped the complete frontend in 15 days.',
+      'Implemented **enterprise SSO, Redux Toolkit state management, Firebase**, code splitting, and performance optimisation across the full application portfolio.',
+      'Engineered **GenAI-assisted development workflows** (GitHub Copilot, ChatGPT, Claude) for automated test generation and migration analysis — reducing dev overhead by 15% QoQ and code-breaking incidents by 40%. Workflow presented internally as an engineering innovation.',
+      'Recognised with a **2-star top-performer rating** (Jan 2026) and promoted to Senior SWE in April 2026 at 18 months — above the average pace for the band.',
     ],
   },
   {
@@ -58,17 +75,17 @@ export const experience: ExperienceItem[] = [
 
 export const projects: Project[] = [
   {
-    id: 'raceiq',
+    id: 'apexon',
     number: 'Featured — 001',
     label: 'Personal Project',
-    name: 'RaceIQ',
-    subtitle: 'F1 Intelligence Dashboard',
+    name: 'ApexOn',
+    subtitle: 'Formula 1 Digital Platform',
     description:
-      'An AI-powered Formula 1 analytics platform combining live race data with historical records. Users ask plain-English questions and receive AI-generated insights backed by dynamic charts — driver comparisons, constructor standings, and lap-time visualisations.',
-    tags: ['React 18', 'TypeScript', 'OpenAI API', 'React Query', 'Recharts', 'Tailwind CSS', 'Vercel'],
+      'A modern Formula 1 platform for beginners and hardcore fans alike — schedules, results, rules, and history combined with team radio, AI assistance, and interactive fan experiences.',
+    tags: ['React', 'TypeScript', 'AI Assistant', 'REST APIs', 'Netlify'],
     links: [
-      { label: 'GitHub', href: 'https://github.com/ysonkhiya122' },
-      { label: 'Live demo', href: '#' },
+      { label: 'GitHub', href: 'https://github.com/ysonkhiya122/ApexOn' },
+      { label: 'Live demo', href: 'https://apexon.netlify.app/' },
     ],
     featured: true,
   },

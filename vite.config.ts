@@ -4,6 +4,10 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    // Dev-only: allow proxied preview hosts (e.g. cloud sandboxes).
+    allowedHosts: ['.e2b.app'],
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

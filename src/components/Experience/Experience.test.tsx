@@ -15,7 +15,8 @@ describe('Experience', () => {
 
   it('renders the promotion badge on the senior role', () => {
     render(<Experience />)
-    expect(screen.getByText(/Promoted/i)).toBeInTheDocument()
+    // "Promoted" appears in both the badge and a bullet — assert the badge.
+    expect(screen.getByText('Promoted · Apr 2026')).toBeInTheDocument()
   })
 
   it('renders at least one bullet point per role', () => {

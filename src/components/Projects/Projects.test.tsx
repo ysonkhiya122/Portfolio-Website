@@ -7,9 +7,9 @@ describe('Projects', () => {
     expect(screen.getByRole('heading', { name: /projects/i })).toBeInTheDocument()
   })
 
-  it('renders the featured RaceIQ project', () => {
+  it('renders the featured ApexOn project', () => {
     render(<Projects />)
-    expect(screen.getByText('RaceIQ')).toBeInTheDocument()
+    expect(screen.getByText('ApexOn')).toBeInTheDocument()
   })
 
   it('renders all three project cards', () => {
@@ -18,8 +18,11 @@ describe('Projects', () => {
     expect(articles.length).toBe(3)
   })
 
-  it('renders GitHub link for RaceIQ', () => {
+  it('renders working GitHub and demo links for the featured project', () => {
     render(<Projects />)
-    expect(screen.getByText('GitHub')).toBeInTheDocument()
+    const github = screen.getByText('GitHub').closest('a')
+    const demo = screen.getByText('Live demo').closest('a')
+    expect(github).toHaveAttribute('href', 'https://github.com/ysonkhiya122/ApexOn')
+    expect(demo).toHaveAttribute('href', 'https://apexon.netlify.app/')
   })
 })

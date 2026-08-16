@@ -17,6 +17,7 @@ describe('Skills', () => {
 
   it('renders TypeScript as a skill', () => {
     render(<Skills />)
-    expect(screen.getByText('TypeScript')).toBeInTheDocument()
+    // Appears in both the grouped list and the skill sphere.
+    expect(screen.getAllByText('TypeScript').length).toBeGreaterThan(0)
   })
 })

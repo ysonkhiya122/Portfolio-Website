@@ -1,6 +1,7 @@
 import { useReveal } from "@/hooks/useReveal";
 import { motion } from "framer-motion";
 import { experience } from "@/data/portfolio";
+import Emphasis from "@/components/Emphasis/Emphasis";
 import styles from "./Experience.module.scss";
 
 export default function Experience() {
@@ -60,10 +61,9 @@ export default function Experience() {
 
                   <ul className={styles.bullets}>
                     {item.bullets.map((bullet, j) => (
-                      <li
-                        key={j}
-                        dangerouslySetInnerHTML={{ __html: bullet }}
-                      />
+                      <li key={j}>
+                        <Emphasis text={bullet} />
+                      </li>
                     ))}
                   </ul>
                 </div>
