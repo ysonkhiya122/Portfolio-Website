@@ -25,6 +25,9 @@ function scrollTo(id: string) {
   document.querySelector(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
+const isMac =
+  typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform)
+
 export default function CommandPalette() {
   const [open,    setOpen]    = useState(false)
   const [query,   setQuery]   = useState('')
@@ -61,6 +64,11 @@ export default function CommandPalette() {
 
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 60)
+    // Prevent the page from scrolling behind the palette.
+    document.body.style.overflow = open ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
   }, [open])
 
   // Group by category
@@ -73,8 +81,13 @@ export default function CommandPalette() {
   return (
     <>
       {/* Trigger hint — bottom left */}
-      <button className={styles.trigger} onClick={() => setOpen(true)} data-cursor-hover>
-        <span className={styles.triggerKbd}>⌘</span>
+      <button
+        className={styles.trigger}
+        onClick={() => setOpen(true)}
+        aria-label="Open command palette"
+        data-cursor-hover
+      >
+        <span className={styles.triggerKbd}>{isMac ? '⌘' : 'Ctrl'}</span>
         <span className={styles.triggerKbd}>K</span>
         <span className={styles.triggerLabel}>Command</span>
       </button>
