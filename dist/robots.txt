@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://yash-sonkhiya.netlify.app/sitemap.xml
