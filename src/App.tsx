@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react'
+import { MotionConfig } from 'framer-motion'
 import Nav from '@/components/Nav/Nav'
 import ScrollLine from '@/components/ScrollLine/ScrollLine'
 import Footer from '@/components/Footer/Footer'
@@ -14,7 +15,9 @@ const CommandPalette = lazy(
 
 export default function App() {
   return (
-    <>
+    // reducedMotion="user": every Framer Motion animation respects the
+    // OS-level prefers-reduced-motion setting automatically.
+    <MotionConfig reducedMotion="user">
       <a href="#about" className="skip-link">
         Skip to content
       </a>
@@ -26,6 +29,6 @@ export default function App() {
       <Suspense fallback={null}>
         <CommandPalette />
       </Suspense>
-    </>
+    </MotionConfig>
   )
 }
