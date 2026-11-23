@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { site } from '@/content/site'
+import { lockScroll, unlockScroll } from '@/lib/scrollLock'
 import styles from './Nav.module.scss'
 
 const LINKS = [
   { label: 'About', href: '#about' },
   { label: 'Work', href: '#work' },
+  { label: 'Notes', href: '#notes' },
   { label: 'Experience', href: '#experience' },
   { label: 'Skills', href: '#skills' },
   { label: 'Contact', href: '#contact' },
@@ -66,10 +68,10 @@ export default function Nav() {
       setMenuOpen(false)
       buttonRef.current?.focus()
     }
-    document.documentElement.classList.add('is-scroll-locked')
+    lockScroll()
     window.addEventListener('keydown', onKey)
     return () => {
-      document.documentElement.classList.remove('is-scroll-locked')
+      unlockScroll()
       window.removeEventListener('keydown', onKey)
     }
   }, [menuOpen])
@@ -130,8 +132,11 @@ export default function Nav() {
                 new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }),
               )
             }
-            aria-label="Open command palette"
           >
+            {/* The visible text is "⌘ K"; the accessible name must contain
+                it, so the label is built from a hidden span instead of an
+                aria-label that replaced it. */}
+            <span className="sr-only">Open command palette </span>
             <kbd>{IS_MAC ? '⌘' : 'Ctrl'}</kbd>
             <kbd>K</kbd>
           </button>

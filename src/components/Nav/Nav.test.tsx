@@ -11,7 +11,7 @@ describe('Nav', () => {
   it('links to every section that exists on the page', () => {
     const { container } = render(<Nav />)
     // Section targets are rendered as anchors; assert the hrefs are real.
-    for (const id of ['#about', '#work', '#experience', '#skills', '#contact']) {
+    for (const id of ['#about', '#work', '#notes', '#experience', '#skills', '#contact']) {
       expect(
         within(container)
           .getAllByRole('link')
@@ -46,6 +46,13 @@ describe('Nav', () => {
 
   it('offers a keyboard shortcut affordance for the palette', () => {
     render(<Nav />)
-    expect(screen.getByRole('button', { name: 'Open command palette' })).toBeInTheDocument()
+    const button = screen.getByRole('button', { name: /open command palette/i })
+    expect(button).toBeInTheDocument()
+
+    // WCAG 2.5.3: the accessible name must *contain* the visible label.
+    // An aria-label that replaces the visible "⌘ K" fails that check, which
+    // is why the component uses a visually-hidden span instead.
+    const visible = button.textContent.replace(/\s+/g, ' ').trim()
+    expect(visible.length).toBeGreaterThan(0)
   })
 })

@@ -7,7 +7,9 @@ import globals from 'globals'
 
 export default tseslint.config(
   {
-    ignores: ['dist', 'coverage', 'node_modules', 'scripts/**', '*.config.*'],
+    // Ad-hoc Node scripts (screenshots, probes) are not part of the app
+    // and are not in the TS project, so typed linting cannot see them.
+    ignores: ['dist', 'coverage', 'node_modules', 'scripts/**', '*.config.*', '*.mjs'],
   },
 
   js.configs.recommended,

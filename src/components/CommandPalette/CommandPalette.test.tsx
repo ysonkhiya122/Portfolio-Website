@@ -1,11 +1,20 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import CommandPalette from './CommandPalette'
 
+/**
+ * The palette listens on `window`, so the shortcut is dispatched there
+ * rather than through userEvent. It has to be wrapped in act() because
+ * the handler sets state — an unwrapped dispatch produces a React
+ * "not wrapped in act(...)" warning for every test, which buries the
+ * warnings that actually matter.
+ */
 const open = () =>
-  window.dispatchEvent(
-    new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }),
-  )
+  act(() => {
+    window.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }),
+    )
+  })
 
 describe('CommandPalette', () => {
   it('is closed until invoked', () => {

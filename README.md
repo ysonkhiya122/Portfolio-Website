@@ -57,6 +57,9 @@ npm run dev        # http://localhost:5173
 
 ## Architecture
 
+> Editing copy? Start with **[docs/CONTENT.md](docs/CONTENT.md)** — it covers
+> where every field lives, the validate loop, and the house rules the gate enforces.
+
 ```
 src/
   content/            ← the only place content lives

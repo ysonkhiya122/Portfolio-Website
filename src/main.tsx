@@ -4,8 +4,9 @@ import App from './App'
 
 // Self-hosted variable font: one interpolated file instead of six
 // static weights, ~120 kB fewer bytes over the wire.
-import '@fontsource-variable/inter'
-import '@fontsource/jetbrains-mono/400.css'
+// Faces are declared by hand in styles/fonts.css so nothing unused is
+// emitted; the fontsource packages are kept only for the binary files.
+import '@/styles/fonts.css'
 
 import '@/styles/globals.scss'
 

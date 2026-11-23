@@ -92,13 +92,11 @@ export default function Hero() {
         </dl>
       </div>
 
-      <a
-        href="#about"
-        className={styles.scrollCue}
-        onClick={scrollTo('#about')}
-        aria-label="Skip to about section"
-      >
-        <span className={styles.scrollCueLabel}>scroll</span>
+      <a href="#about" className={styles.scrollCue} onClick={scrollTo('#about')}>
+        <span className="sr-only">Scroll to the about section</span>
+        <span className={styles.scrollCueLabel} aria-hidden="true">
+          scroll
+        </span>
         <span className={styles.scrollCueLine} aria-hidden="true" />
       </a>
     </section>

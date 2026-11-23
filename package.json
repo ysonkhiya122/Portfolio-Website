@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "node scripts/build-pages.mjs && npm run build:cv && tsc -b && vite build",
     "preview": "vite preview",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -21,10 +21,12 @@
     "format:check": "prettier --check .",
     "size": "node scripts/check-budget.mjs",
     "audit:prod": "npm audit --omit=dev --audit-level=moderate",
-    "validate": "npm run validate:content && npm run lint && npm run format:check && npm run test && npm run build && npm run size",
+    "validate": "npm run validate:content && npm run validate:links && npm run lint && npm run format:check && npm run test && npm run build && npm run size",
     "validate:content": "node scripts/validate-content.mjs",
     "visual": "node scripts/visual-check.mjs",
-    "build:cv": "node scripts/build-cv.mjs"
+    "build:cv": "node scripts/build-cv.mjs",
+    "build:pages": "node scripts/build-pages.mjs",
+    "validate:links": "node scripts/validate-links.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",

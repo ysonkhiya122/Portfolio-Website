@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { assets } from '@/content/assets'
 import { site } from '@/content/site'
+import { sortedNotes } from '@/lib/noteRoutes'
 import { content } from '@/content'
+import { lockScroll, unlockScroll } from '@/lib/scrollLock'
 import styles from './CommandPalette.module.scss'
 
 interface Command {
@@ -43,27 +46,42 @@ function buildCommands(openProject: (id: string) => void): Command[] {
       run: () => scrollToId('#work'),
     },
     {
+      id: 'notes',
+      label: 'Notes',
+      group: 'Jump to',
+      hint: '06',
+      run: () => scrollToId('#notes'),
+    },
+    {
       id: 'experience',
       label: 'Experience',
       group: 'Jump to',
-      hint: '03',
+      hint: '07',
       run: () => scrollToId('#experience'),
     },
     {
       id: 'skills',
       label: 'Toolkit',
       group: 'Jump to',
-      hint: '04',
+      hint: '08',
       run: () => scrollToId('#skills'),
     },
     {
       id: 'contact',
       label: 'Contact',
       group: 'Jump to',
-      hint: '06',
+      hint: '09',
       run: () => scrollToId('#contact'),
     },
   ]
+
+  const noteCommands: Command[] = sortedNotes.map((note) => ({
+    id: `note-${note.slug}`,
+    label: note.title,
+    group: 'Notes',
+    keywords: note.tags.join(' '),
+    run: () => openExternal(`/notes/${note.slug}/`),
+  }))
 
   const cases: Command[] = content.projects.map((project) => ({
     id: `case-${project.id}`,
@@ -92,13 +110,15 @@ function buildCommands(openProject: (id: string) => void): Command[] {
         window.location.href = `mailto:${site.email}`
       },
     },
-    {
-      id: 'cv',
-      label: 'Download CV (PDF)',
-      group: 'Actions',
-      keywords: 'resume pdf',
-      run: () => openExternal('/yash-sonkhiya-cv.pdf'),
-    },
+    ...assets
+      .filter((asset) => asset.group === 'Downloads')
+      .map<Command>((asset) => ({
+        id: asset.id,
+        label: asset.label,
+        group: 'Downloads',
+        keywords: asset.description,
+        run: () => openExternal(asset.href),
+      })),
     {
       id: 'github',
       label: 'Open GitHub',
@@ -120,7 +140,7 @@ function buildCommands(openProject: (id: string) => void): Command[] {
     },
   ]
 
-  return [...nav, ...cases, ...actions]
+  return [...nav, ...cases, ...noteCommands, ...actions]
 }
 
 export default function CommandPalette({
@@ -197,10 +217,10 @@ export default function CommandPalette({
     const timer = window.setTimeout(() => {
       inputRef.current?.focus()
     }, 30)
-    document.documentElement.classList.add('is-scroll-locked')
+    lockScroll()
     return () => {
       window.clearTimeout(timer)
-      document.documentElement.classList.remove('is-scroll-locked')
+      unlockScroll()
     }
   }, [open])
 

@@ -399,6 +399,119 @@ The safe path is: React 19 **first** (independent of Vite), validate, then Vite
 
 ---
 
+---
+
+## Part 7 — Second pass: auditing my own work
+
+The first pass fixed what was wrong with the original repo. This pass
+audited the fixes. Every item below was a real defect in code I shipped
+and called done — which is the point of doing a second pass at all.
+
+### Defects I introduced
+
+**1. Deep links did not work, though the audit claimed they did.**
+`App.tsx` wrote `#work/<id>` to the URL with `history.replaceState`, but
+nothing ever read the hash back. Loading a shared link opened the site
+with the dialog closed. Worse, `replaceState` also meant the browser Back
+button could not close the dialog.
+
+Fixed properly: `src/lib/caseStudyRoute.ts` now owns parse/build/push, the
+app hydrates initial state from `location.hash`, listens for both
+`hashchange` and `popstate`, `pushState` opens a case study and a
+`replaceState` to `#work` closes it. Unknown slugs resolve to `null`
+rather than opening an empty dialog.
+
+**2. Two `<dialog>` elements were mounting.**
+`Projects` kept its own `activeId` state and its own `CaseStudyDialog`,
+while `App` had a second one driven by the URL. Clicking a card bypassed
+the URL entirely, and both dialogs existed in the DOM. The card picker
+was decorating the app with a modal, not opening it.
+
+Fixed by making `Projects` a pure renderer that delegates via
+`onOpenProject`. The type system then flagged all five test call sites,
+which is how the duplication should have been caught in the first place.
+
+**3. `is-scroll-locked` was a no-op.**
+Three components added `html.is-scroll-locked`; no stylesheet defined it.
+The class did nothing, and background scroll was only blocked because
+`showModal()` puts the page in the top layer.
+
+Fixed with a real rule in `globals.scss` _and_ a reference-counted
+`src/lib/scrollLock.ts`. A naive class toggle breaks the moment two
+surfaces overlap — opening the command palette over an open case study
+and closing the palette unlocked the page underneath the still-open
+modal. Three unit tests cover the counting.
+
+**4. Nav links moved the viewport but not the keyboard.**
+`scrollToId()` called `.focus()` on a plain `<section>`, which has no
+`tabindex`, so the call silently did nothing and focus fell back to
+`<body>`. A keyboard user activating "Skills" was scrolled to the section
+and left with focus nowhere.
+
+Fixed with `tabIndex={-1}` on sections. Verified in a real browser:
+`document.activeElement` after clicking the nav link is now
+`section#skills`.
+
+**5. Nine font files were being emitted into every deploy.** (see Part 3)
+
+**6. The CV could silently drift from the site.** `build:cv` existed but
+was not part of `npm run build`, so the PDF was only as fresh as the last
+manual run. It is now generated on every build.
+
+**7. Two WCAG 2.5.3 violations hid behind mobile-only testing.**
+`label-content-name-mismatch` failed for the nav palette button (visible
+`⌘ K`, `aria-label="Open command palette"`) and the hero scroll cue
+(visible `scroll`, `aria-label="Skip to about section"`). Both replaced
+visible text with an accessible name that did not contain it. Fixed with
+visually-hidden spans. Desktop Lighthouse had never been run until now;
+it surfaced both immediately.
+
+**8. Test hygiene.** Every command-palette test emitted a React
+`not wrapped in act(...)` warning because the keyboard event was
+dispatched outside `act()`. Zero warnings now, so the next real warning
+will be visible.
+
+### Two structural problems behind those defects
+
+**A section shell was missing.** Nine components each re-implemented
+`<section><div class="container"><header>…`, each registered its own
+reveal observer, and section numbers were typed by hand — they had
+already drifted. `src/components/ui/Section.tsx` now owns the focus
+target, the reveal and the layout; `src/content/sections.ts` owns order
+and derivation, so numbering cannot drift.
+
+**Links were unverifiable.** The palette linked to `/yash-sonkhiya-cv.pdf`
+with no guarantee it existed. `npm run validate:links` now asserts that
+every registry asset resolves, every section anchor exists, and every
+note has a built page. It is in `npm run validate` and in CI.
+
+### Added
+
+| What                                     | Why                                                                                                             |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `src/content/notes.ts` + three write-ups | Proof of reasoning in prose, not just claims                                                                    |
+| `scripts/build-pages.mjs`                | Real static HTML per note, plus sitemap/robots regeneration                                                     |
+| Context section                          | States what is verified, measured, attributed and generalised — the trust question a senior reader actually has |
+| `src/content/assets.ts`                  | Downloads as data, so the link gate can verify them                                                             |
+| Content guide (`docs/CONTENT.md`)        | The editing workflow, in one place                                                                              |
+
+### Verified after these changes
+
+| Check                               | Result                                                          |
+| ----------------------------------- | --------------------------------------------------------------- |
+| `npm run validate`                  | green — content, links, lint, format, **80 tests**, build, size |
+| Lighthouse desktop                  | **100 / 100 / 100 / 100**, CLS 0, zero failing audits           |
+| Lighthouse mobile                   | 99 / 100 / 100 / 100, LCP 2.1 s, CLS 0                          |
+| Deep link cold load                 | dialog open, `:modal`, correct title, page locked               |
+| Escape / Back / Forward             | close, close, reopen — URL and lock stay consistent             |
+| Unknown slug `#work/does-not-exist` | no dialog, no error                                             |
+| Nav keyboard focus                  | `section#skills` receives focus                                 |
+| Fonts emitted                       | 9 → **4** files; critical path 146.1 → **142.3 kB**             |
+| Bundle                              | entry 20.1 · vendor 44.4 · css 7.8 kB gzipped                   |
+| Production vulnerabilities          | 0                                                               |
+
+---
+
 ## Action required from you
 
 Four things need your input before this is truly production-ready:

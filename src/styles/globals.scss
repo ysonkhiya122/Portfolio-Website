@@ -146,6 +146,32 @@ textarea {
   border-top: 1px solid $c-rule;
 }
 
+// Programmatically focusable sections must not sprout a focus ring when
+// they are scrolled to; the scroll itself is the affordance.
+.section:focus {
+  outline: none;
+}
+
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: $space-5;
+  margin-bottom: $space-6;
+
+  @media (max-width: $bp-md) {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: $space-3;
+  }
+}
+
+.section-lede {
+  margin-top: -$space-4;
+  margin-bottom: $space-6;
+  max-width: 62ch;
+}
+
 .measure {
   max-width: $measure;
 }
@@ -323,6 +349,25 @@ p {
   &:focus-visible {
     transform: translateY(0);
     outline-offset: 2px;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+//  SCROLL LOCK
+//
+//  Applied by src/lib/scrollLock.ts, which reference-counts holders.
+//  `position: fixed` with a negative top preserves the scroll position;
+//  `overflow: hidden` alone snaps some browsers back to the top.
+// ─────────────────────────────────────────────────────────────
+html.is-scroll-locked {
+  overflow: hidden;
+
+  body {
+    position: fixed;
+    inset-inline: 0;
+    top: var(--scroll-y, 0);
+    width: 100%;
+    overflow: hidden;
   }
 }
 

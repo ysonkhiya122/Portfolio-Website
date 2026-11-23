@@ -1,9 +1,8 @@
-import { useState } from 'react'
 import { content } from '@/content'
 import type { Project } from '@/content'
-import { useReveal } from '@/hooks/useReveal'
 import Reveal from '@/components/ui/Reveal'
-import CaseStudyDialog from '@/components/CaseStudyDialog/CaseStudyDialog'
+import Section from '@/components/ui/Section'
+import { sectionEyebrow } from '@/content/sections'
 import styles from './Projects.module.scss'
 
 const STATUS_LABEL: Record<Project['status'], string> = {
@@ -109,43 +108,28 @@ function ProjectCard({
   )
 }
 
-export default function Projects() {
-  const ref = useReveal<HTMLElement>()
-  const [activeId, setActiveId] = useState<string | null>(null)
-  const active = content.projects.find((project) => project.id === activeId) ?? null
-
+/**
+ * Pure renderer. The dialog and its state live in App, so there is one
+ * source of truth for "which case study is open".
+ */
+export default function Projects({ onOpenProject }: { onOpenProject: (id: string) => void }) {
   return (
-    <section
+    <Section
       id="work"
-      ref={ref}
-      className="section section--ruled"
-      aria-labelledby="work-title"
+      eyebrow={sectionEyebrow('work')}
+      title="Three systems, and the decisions behind them."
+      description="Feature lists are easy to fake. These are the trade-offs I actually argued for, and the numbers that came out of them."
     >
-      <div className="container">
-        <Reveal className={styles.head}>
-          <p className="eyebrow">02 / Selected work</p>
-          <h2 id="work-title" className="section-title">
-            Three systems, and the decisions behind them.
-          </h2>
-          <p className="lede">
-            Feature lists are easy to fake. These are the trade-offs I actually argued for, and
-            the numbers that came out of them.
-          </p>
-        </Reveal>
-
-        <div className={styles.grid}>
-          {content.projects.map((project, index) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              order={index}
-              onOpen={() => setActiveId(project.id)}
-            />
-          ))}
-        </div>
+      <div className={styles.grid}>
+        {content.projects.map((project, index) => (
+          <ProjectCard
+            key={project.id}
+            project={project}
+            order={index}
+            onOpen={() => onOpenProject(project.id)}
+          />
+        ))}
       </div>
-
-      <CaseStudyDialog project={active} onClose={() => setActiveId(null)} />
-    </section>
+    </Section>
   )
 }

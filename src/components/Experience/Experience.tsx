@@ -1,8 +1,9 @@
 import { content } from '@/content'
 import type { Experience as ExperienceEntry } from '@/content'
 import { formatRange, formatDuration } from '@/lib/format'
-import { useReveal } from '@/hooks/useReveal'
 import Reveal from '@/components/ui/Reveal'
+import Section from '@/components/ui/Section'
+import { sectionEyebrow } from '@/content/sections'
 import styles from './Experience.module.scss'
 
 function TimelineEntry({ entry, order }: { entry: ExperienceEntry; order: number }) {
@@ -62,29 +63,17 @@ function TimelineEntry({ entry, order }: { entry: ExperienceEntry; order: number
 }
 
 export default function Experience() {
-  const ref = useReveal<HTMLElement>()
-
   return (
-    <section
+    <Section
       id="experience"
-      ref={ref}
-      className="section section--ruled"
-      aria-labelledby="experience-title"
+      eyebrow={sectionEyebrow('experience')}
+      title="Two roles, one promotion, three years of production."
     >
-      <div className="container">
-        <Reveal className={styles.head}>
-          <p className="eyebrow">03 / Experience</p>
-          <h2 id="experience-title" className="section-title">
-            Two roles, one promotion, three years of production.
-          </h2>
-        </Reveal>
-
-        <div className={styles.timeline}>
-          {content.experience.map((entry, index) => (
-            <TimelineEntry key={entry.id} entry={entry} order={index} />
-          ))}
-        </div>
+      <div className={styles.timeline}>
+        {content.experience.map((entry, index) => (
+          <TimelineEntry key={entry.id} entry={entry} order={index} />
+        ))}
       </div>
-    </section>
+    </Section>
   )
 }

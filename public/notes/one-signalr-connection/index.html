@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#08080a">
+  <title>One SignalR connection, not one per component — Yash Sonkhiya</title>
+  <meta name="description" content="Connecting to a WebSocket from each widget is the obvious approach and it falls over the first time an enterprise SSO session is shared across tabs.">
+  <link rel="canonical" href="https://yash-sonkhiya.com/notes/one-signalr-connection/">
+  <meta name="author" content="Yash Sonkhiya">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="One SignalR connection, not one per component">
+  <meta property="og:description" content="Connecting to a WebSocket from each widget is the obvious approach and it falls over the first time an enterprise SSO session is shared across tabs.">
+  <meta property="og:url" content="https://yash-sonkhiya.com/notes/one-signalr-connection/">
+  <meta property="og:image" content="https://yash-sonkhiya.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/notes/note.css">
+  <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "One SignalR connection, not one per component",
+  "description": "Connecting to a WebSocket from each widget is the obvious approach and it falls over the first time an enterprise SSO session is shared across tabs.",
+  "datePublished": "2026-10-14",
+  "author": {
+    "@type": "Person",
+    "name": "Yash Sonkhiya",
+    "url": "https://yash-sonkhiya.com"
+  },
+  "keywords": "real-time, architecture",
+  "url": "https://yash-sonkhiya.com/notes/one-signalr-connection/"
+}
+  </script>
+</head>
+<body>
+  <main class="wrap">
+    <a class="back" href="/#notes">&larr; All notes</a>
+    <p class="meta">
+      <time datetime="2026-10-14">Oct 2026</time>
+      <span class="dot">&middot;</span>
+      <span>4 min read</span>
+    </p>
+    <h1>One SignalR connection, not one per component</h1>
+    <p class="summary">Connecting to a WebSocket from each widget is the obvious approach and it falls over the first time an enterprise SSO session is shared across tabs.</p>
+    <div class="tags"><span class="tag">real-time</span><span class="tag">architecture</span></div>
+    <div class="rule"></div>
+    <p>The first version of our dispatch board opened a SignalR connection inside the component that needed live job updates. Two components needed them, so we got two connections. It worked in development, where one browser tab and one user represented the whole system.</p>
+        <p>In staging, coordinators share an enterprise SSO session across tabs, and several of them work the same board during peak. Hub connection limits are per user, not per tab. The second tab began failing handshakes, the client retried, and the retries read to the server as a burst. Nothing crashed. Updates just stopped arriving for some users, which is worse.</p>
+        <h2>The shape we moved to</h2>
+        <p>A single connection is owned by the application, established after auth resolves and torn down on sign-out. Screens subscribe to topics rather than open sockets: the connection multiplexes, and each screen unsubscribes when it unmounts. Reconnection is handled once, in one place, with exponential backoff and a jitter term — without jitter, every tab recovers in lockstep and you rebuild the thundering herd you just tried to avoid.</p>
+        <h2>What this cost</h2>
+        <p>One extra layer of indirection. A screen can no longer assume a live connection the moment it mounts, so every consumer handles three states: connecting, live, and degraded. That sounds like overhead until you remember the alternative was a silent failure mode where the UI looks correct and is simply out of date.</p>
+        <h2>What I would do differently</h2>
+        <p>Model the connection state as a first-class part of the UI from the first sprint. A stale-data indicator is not a nice-to-have when the data is the product; it is the difference between a coordinator trusting the board and a coordinator phoning the technician to check.</p>
+    <p class="footer">
+      Written by <a href="/">Yash Sonkhiya</a>, frontend engineer.
+      Open to senior frontend roles —
+      <a href="mailto:yashsonkhiya2195@gmail.com">yashsonkhiya2195@gmail.com</a>
+      <br>
+      <a class="cta" href="/#work">See the case studies</a>
+    </p>
+  </main>
+</body>
+</html>

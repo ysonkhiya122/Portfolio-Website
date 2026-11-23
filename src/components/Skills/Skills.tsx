@@ -1,7 +1,8 @@
 import { content } from '@/content'
 import type { SkillGroup } from '@/content'
-import { useReveal } from '@/hooks/useReveal'
 import Reveal from '@/components/ui/Reveal'
+import Section from '@/components/ui/Section'
+import { sectionEyebrow } from '@/content/sections'
 import styles from './Skills.module.scss'
 
 const LEVEL_LABEL = {
@@ -40,34 +41,18 @@ function SkillGroupCard({ group, order }: { group: SkillGroup; order: number }) 
 }
 
 export default function Skills() {
-  const ref = useReveal<HTMLElement>()
-
   return (
-    <section
+    <Section
       id="skills"
-      ref={ref}
-      className="section section--ruled"
-      aria-labelledby="skills-title"
+      eyebrow={sectionEyebrow('skills')}
+      title="What I actually reach for."
+      description="Levelled honestly. “Working knowledge” means I have shipped with it and would ask questions before architecting around it — which is more useful to you than a wall of logos."
     >
-      <div className="container">
-        <Reveal className={styles.head}>
-          <p className="eyebrow">04 / Toolkit</p>
-          <h2 id="skills-title" className="section-title">
-            What I actually reach for.
-          </h2>
-          <p className="lede">
-            Levelled honestly. “Working knowledge” means I have shipped with it and would ask
-            questions before architecting around it — which is more useful to you than a wall
-            of logos.
-          </p>
-        </Reveal>
-
-        <div className={styles.grid}>
-          {content.skillGroups.map((group, index) => (
-            <SkillGroupCard key={group.id} group={group} order={index} />
-          ))}
-        </div>
+      <div className={styles.grid}>
+        {content.skillGroups.map((group, index) => (
+          <SkillGroupCard key={group.id} group={group} order={index} />
+        ))}
       </div>
-    </section>
+    </Section>
   )
 }

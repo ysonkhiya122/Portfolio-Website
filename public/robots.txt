@@ -1,7 +1,5 @@
 User-agent: *
 Allow: /
-
-# Nothing private here, but keep crawlers out of build noise.
 Disallow: /assets/
 
 Sitemap: https://yash-sonkhiya.com/sitemap.xml

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import type { Project } from '@/content'
+import { lockScroll, unlockScroll } from '@/lib/scrollLock'
 import styles from './CaseStudyDialog.module.scss'
 
 interface Props {
@@ -8,16 +9,13 @@ interface Props {
   onClose: () => void
 }
 
-const FOCUSABLE =
-  'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
-
 /**
  * Native <dialog> in modal mode.
  *
- * Replaces the hand-rolled overlay + manual focus trap the previous
- * version implemented. The platform now handles inertness of the rest
- * of the page, focus restoration on close, Escape, and the top layer,
- * so there is less custom accessibility code to get wrong.
+ * The platform handles inertness of the rest of the page, focus
+ * restoration on close, Escape, and the top layer. This component no
+ * longer implements its own Tab trap: `showModal()` already does it, and
+ * a second trap fighting the first is how focus bugs happen.
  */
 export default function CaseStudyDialog({ project, onClose }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null)
@@ -31,14 +29,10 @@ export default function CaseStudyDialog({ project, onClose }: Props) {
       dialog.showModal()
       // Move focus to the close control, not the container.
       closeRef.current?.focus()
-      document.documentElement.classList.add('is-scroll-locked')
+      lockScroll()
     } else if (!project && dialog.open) {
       dialog.close()
-      document.documentElement.classList.remove('is-scroll-locked')
-    }
-
-    return () => {
-      document.documentElement.classList.remove('is-scroll-locked')
+      unlockScroll()
     }
   }, [project])
 
@@ -48,36 +42,20 @@ export default function CaseStudyDialog({ project, onClose }: Props) {
     const dialog = dialogRef.current
     if (!dialog) return
     const handle = () => {
-      document.documentElement.classList.remove('is-scroll-locked')
+      unlockScroll()
       onClose()
     }
     dialog.addEventListener('cancel', handle)
     return () => dialog.removeEventListener('cancel', handle)
   }, [onClose])
 
+  // Release the lock if the component unmounts while open.
+  useEffect(() => () => unlockScroll(), [])
+
   if (typeof document === 'undefined') return null
 
   return createPortal(
-    <dialog
-      ref={dialogRef}
-      className={styles.dialog}
-      aria-labelledby="case-study-title"
-      onKeyDown={(event) => {
-        if (event.key !== 'Tab') return
-        const nodes = dialogRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE)
-        if (!nodes || nodes.length === 0) return
-        const first = nodes[0]
-        const last = nodes[nodes.length - 1]
-        if (!first || !last) return
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault()
-          last.focus()
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault()
-          first.focus()
-        }
-      }}
-    >
+    <dialog ref={dialogRef} className={styles.dialog} aria-labelledby="case-study-title">
       {project && (
         <article className={styles.content}>
           <header className={styles.header}>
