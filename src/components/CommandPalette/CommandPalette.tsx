@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { assets } from '@/content/assets'
 import { site } from '@/content/site'
 import { sortedNotes } from '@/lib/noteRoutes'
+import { sectionMeta, sectionNumber, sectionOrder } from '@/content/sections'
 import { content } from '@/content'
 import { lockScroll, unlockScroll } from '@/lib/scrollLock'
 import styles from './CommandPalette.module.scss'
@@ -30,50 +31,16 @@ function openExternal(url: string) {
 }
 
 function buildCommands(openProject: (id: string) => void): Command[] {
-  const nav: Command[] = [
-    {
-      id: 'about',
-      label: 'About',
-      group: 'Jump to',
-      hint: '01',
-      run: () => scrollToId('#about'),
-    },
-    {
-      id: 'work',
-      label: 'Selected work',
-      group: 'Jump to',
-      hint: '02',
-      run: () => scrollToId('#work'),
-    },
-    {
-      id: 'notes',
-      label: 'Notes',
-      group: 'Jump to',
-      hint: '06',
-      run: () => scrollToId('#notes'),
-    },
-    {
-      id: 'experience',
-      label: 'Experience',
-      group: 'Jump to',
-      hint: '07',
-      run: () => scrollToId('#experience'),
-    },
-    {
-      id: 'skills',
-      label: 'Toolkit',
-      group: 'Jump to',
-      hint: '08',
-      run: () => scrollToId('#skills'),
-    },
-    {
-      id: 'contact',
-      label: 'Contact',
-      group: 'Jump to',
-      hint: '09',
-      run: () => scrollToId('#contact'),
-    },
-  ]
+  // Hints are derived, not typed. They were hardcoded here and had already
+  // gone stale twice over: 01–02 skipped five numbers, and removing a section
+  // would have silently desynced them from the page again.
+  const nav: Command[] = sectionOrder.map((id) => ({
+    id,
+    label: sectionMeta[id].label,
+    group: 'Jump to',
+    hint: sectionNumber(id),
+    run: () => scrollToId(`#${id}`),
+  }))
 
   const noteCommands: Command[] = sortedNotes.map((note) => ({
     id: `note-${note.slug}`,

@@ -1,17 +1,18 @@
 /**
  * The page's section order, in one place.
  *
- * Section numbers used to be hardcoded in each component's eyebrow
- * ("03 / Experience"). Inserting a section meant renumbering the rest by
- * hand, and they had already drifted out of order. The number is now
- * derived from this list, so ordering is a one-line change.
+ * Section numbers used to be hardcoded in each component's eyebrow and in
+ * the command palette's jump-to list. Both had already drifted. Every
+ * number is now derived from this array, so adding, removing or reordering
+ * a section is a one-line change that cannot desync the page from the
+ * palette.
  *
- * `notes` is deliberately absent from the numbering: it is a card grid
- * whose items link out, and numbering it would imply it is one of the
- * narrative chapters.
+ * The list must stay in the order the components appear in App.tsx —
+ * `notes` is included because it is a numbered chapter between Work and
+ * Experience, and skipping it produced a section order that jumped
+ * 02 → 04 with no 03.
  */
 export const sectionOrder = [
-  'context',
   'about',
   'work',
   'notes',
@@ -24,7 +25,6 @@ export const sectionOrder = [
 export type SectionId = (typeof sectionOrder)[number]
 
 export const sectionMeta: Record<SectionId, { label: string }> = {
-  context: { label: 'How to read this' },
   about: { label: 'About' },
   work: { label: 'Selected work' },
   notes: { label: 'Notes' },
@@ -34,9 +34,12 @@ export const sectionMeta: Record<SectionId, { label: string }> = {
   contact: { label: 'Contact' },
 }
 
+/** "01" — the zero-padded position of a section. */
+export function sectionNumber(id: SectionId): string {
+  return String(sectionOrder.indexOf(id) + 1).padStart(2, '0')
+}
+
 /** "02 / Selected work" */
 export function sectionEyebrow(id: SectionId): string {
-  const index = sectionOrder.indexOf(id)
-  const number = String(index + 1).padStart(2, '0')
-  return `${number} / ${sectionMeta[id].label}`
+  return `${sectionNumber(id)} / ${sectionMeta[id].label}`
 }

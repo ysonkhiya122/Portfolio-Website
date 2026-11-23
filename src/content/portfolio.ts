@@ -93,7 +93,9 @@ export const projects = [
     stack: ['React 19', 'TypeScript', 'SignalR', 'Redux Toolkit', 'Entra SSO', 'i18n'],
     links: [],
     notes:
-      'Client engagement — no public URL. Architecture and trade-offs are discussed in interviews.',
+      'Client engagement, described by domain rather than by name per my employment agreement. ' +
+      'The React 16→19 migration was my work; the platform it runs on was not — sizing, ' +
+      'backend and the SignalR hubs were shared across the team.',
   },
   {
     id: 'asset-portal',

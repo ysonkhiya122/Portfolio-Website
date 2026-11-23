@@ -2,6 +2,7 @@ import { sortedNotes } from '@/lib/noteRoutes'
 import { formatMonth } from '@/lib/format'
 import Reveal from '@/components/ui/Reveal'
 import Section from '@/components/ui/Section'
+import { sectionEyebrow } from '@/content/sections'
 import styles from './Notes.module.scss'
 
 function ArrowUpRight() {
@@ -22,7 +23,7 @@ export default function Notes() {
   return (
     <Section
       id="notes"
-      eyebrow="Writing"
+      eyebrow={sectionEyebrow('notes')}
       title="Write-ups, not blog posts."
       description="Short pieces about decisions that were hard to make. Written so that someone facing the same problem gets something useful, not so that I look clever."
     >

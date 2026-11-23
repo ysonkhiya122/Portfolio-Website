@@ -48,6 +48,13 @@
     text-decoration: none; font-size: 13px; font-weight: 500;
   }
   .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 32px; }
+  .code {
+    font: 500 72px/1 ui-monospace, 'SF Mono', monospace;
+    color: #e8a33d; letter-spacing: -.04em; margin-bottom: 24px;
+  }
+  .links { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 28px; font-size: 14px; }
+  .links a { color: #8b8680; text-underline-offset: 3px; }
+  .links a:hover { color: #f2efe9; }
   .tag {
     font: 400 11px/1 ui-monospace, 'SF Mono', monospace;
     padding: 4px 9px; border: 1px solid rgba(255,255,255,.13);

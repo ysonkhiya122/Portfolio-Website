@@ -3,7 +3,6 @@ import { render } from '@testing-library/react'
 import { axe } from 'jest-axe'
 import Hero from '@/components/Hero/Hero'
 import About from '@/components/About/About'
-import Context from '@/components/Context/Context'
 import Projects from '@/components/Projects/Projects'
 import Experience from '@/components/Experience/Experience'
 import Skills from '@/components/Skills/Skills'
@@ -15,7 +14,6 @@ import Nav from '@/components/Nav/Nav'
 const cases: [string, ComponentType][] = [
   ['Nav', Nav],
   ['Hero', Hero],
-  ['Context', Context],
   ['About', About],
   ['Projects', () => <Projects onOpenProject={() => {}} />],
   ['Experience', Experience],

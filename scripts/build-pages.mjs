@@ -96,6 +96,13 @@ const PAGE_CSS = `
     text-decoration: none; font-size: 13px; font-weight: 500;
   }
   .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 32px; }
+  .code {
+    font: 500 72px/1 ui-monospace, 'SF Mono', monospace;
+    color: #e8a33d; letter-spacing: -.04em; margin-bottom: 24px;
+  }
+  .links { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 28px; font-size: 14px; }
+  .links a { color: #8b8680; text-underline-offset: 3px; }
+  .links a:hover { color: #f2efe9; }
   .tag {
     font: 400 11px/1 ui-monospace, 'SF Mono', monospace;
     padding: 4px 9px; border: 1px solid rgba(255,255,255,.13);
@@ -190,6 +197,42 @@ function renderNote(note, site) {
 `
 }
 
+function render404(site) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#08080a">
+  <title>Page not found — ${escapeHtml(site.name)}</title>
+  <meta name="robots" content="noindex">
+  <meta name="description" content="That page does not exist.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/notes/note.css">
+</head>
+<body>
+  <main class="wrap">
+    <p class="code">404</p>
+    <h1>That page is not here.</h1>
+    <p class="summary">
+      The link may be out of date, or the case study id may have changed.
+      A recent case study link looks like <code>#work/apexon</code>.
+    </p>
+    <div class="rule"></div>
+    <p>The useful places are:</p>
+    <div class="links">
+      <a href="/">Home</a>
+      <a href="/#work">Case studies</a>
+      <a href="/#notes">Notes</a>
+      <a href="mailto:${site.email}">Email me</a>
+    </div>
+  </main>
+</body>
+</html>
+`
+}
+
 async function main() {
   const [{ notes }, { site }] = await Promise.all([
     load('src/content/notes.ts', 'notes'),
@@ -205,6 +248,8 @@ async function main() {
     await mkdir(dir, { recursive: true })
     await writeFile(path.join(dir, 'index.html'), renderNote(note, site), 'utf8')
   }
+
+  await writeFile(path.join(root, 'public', '404.html'), render404(site), 'utf8')
 
   // ── Sitemap: the home page plus every note, newest first.
   const urls = [

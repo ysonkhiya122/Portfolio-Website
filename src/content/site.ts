@@ -23,7 +23,6 @@ export const site = {
   employer: {
     current: 'Accenture',
     previous: 'Accenture',
-    clientDescriptor: 'a European field-service enterprise',
   },
 
   location: {

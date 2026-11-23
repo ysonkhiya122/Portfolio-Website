@@ -2,7 +2,6 @@ import { Suspense, lazy, useCallback, useEffect, useState } from 'react'
 import Nav from '@/components/Nav/Nav'
 import Hero from '@/components/Hero/Hero'
 import About from '@/components/About/About'
-import Context from '@/components/Context/Context'
 import Notes from '@/components/Notes/Notes'
 import Projects from '@/components/Projects/Projects'
 import Experience from '@/components/Experience/Experience'
@@ -69,7 +68,6 @@ export default function App() {
       <main id="main" tabIndex={-1}>
         <div id="top" />
         <Hero />
-        <Context />
         <About />
         <Projects onOpenProject={openProject} />
         <Notes />

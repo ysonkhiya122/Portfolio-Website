@@ -39,16 +39,15 @@ guess.
 
 Everything used in the header, footer, `<head>`, JSON-LD and the CV header.
 
-| Field                                       | What it controls                                                             | Notes                                                                           |
-| ------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `name`, `role`                              | Nav brand, page title, JSON-LD                                               | `role` appears in the CV footer too                                             |
-| `email`                                     | Every `mailto:`, the copy-email palette command, the contact form's fallback | One place only                                                                  |
-| `location.city` / `.region` / `.remoteNote` | About "Based" and "Working style" facts                                      |                                                                                 |
-| `employer.current`                          | Experience heading context and the Context section                           | ⚠️ Currently `"Accenture"` — see §6                                             |
-| `employer.clientDescriptor`                 | The "Generalised" card in the Context section                                | Describes your employer _by domain_, e.g. "a European field-service enterprise" |
-| `availability.status`                       | Hero badge, contact CTA, note page footers                                   |                                                                                 |
-| `url`                                       | Canonical links, sitemap, `og:url`, robots                                   | ⚠️ Placeholder domain — see §6                                                  |
-| `links.github` / `.linkedin`                | Nav, contact, palette                                                        | Absolute URLs                                                                   |
+| Field                                       | What it controls                                                             | Notes                               |
+| ------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------- |
+| `name`, `role`                              | Nav brand, page title, JSON-LD                                               | `role` appears in the CV footer too |
+| `email`                                     | Every `mailto:`, the copy-email palette command, the contact form's fallback | One place only                      |
+| `location.city` / `.region` / `.remoteNote` | About "Based" and "Working style" facts                                      |                                     |
+| `employer.current`                          | Experience heading context and the Context section                           | ⚠️ Currently `"Accenture"` — see §6 |
+| `availability.status`                       | Hero badge, contact CTA, note page footers                                   |                                     |
+| `url`                                       | Canonical links, sitemap, `og:url`, robots                                   | ⚠️ Placeholder domain — see §6      |
+| `links.github` / `.linkedin`                | Nav, contact, palette                                                        | Absolute URLs                       |
 
 ### `src/content/portfolio.ts` — the substance
 
