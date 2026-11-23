@@ -1,237 +1,377 @@
-import { useEffect, useState, useCallback, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { site } from '@/content/site'
+import { content } from '@/content'
 import styles from './CommandPalette.module.scss'
 
 interface Command {
-  id:       string
-  label:    string
-  category: string
-  action:   () => void
-  shortcut?: string
+  id: string
+  label: string
+  group: string
+  keywords?: string
+  hint?: string
+  run: () => void
 }
 
-const COMMANDS: Command[] = [
-  { id: 'about',        label: 'Go to About',        category: 'Navigate', action: () => scrollTo('#about')        },
-  { id: 'experience',   label: 'Go to Experience',   category: 'Navigate', action: () => scrollTo('#experience')   },
-  { id: 'projects',     label: 'Go to Projects',     category: 'Navigate', action: () => scrollTo('#projects')     },
-  { id: 'skills',       label: 'Go to Skills',       category: 'Navigate', action: () => scrollTo('#skills')       },
-  { id: 'achievements', label: 'Go to Recognition',  category: 'Navigate', action: () => scrollTo('#achievements') },
-  { id: 'education',    label: 'Go to Education',    category: 'Navigate', action: () => scrollTo('#education')    },
-  { id: 'contact',      label: 'Go to Contact',      category: 'Navigate', action: () => scrollTo('#contact')      },
-  { id: 'email',        label: 'Send an email',      category: 'Connect',  action: () => { window.location.href = 'mailto:yashsonkhiya2195@gmail.com' }, shortcut: 'E' },
-  { id: 'github',       label: 'Open GitHub',        category: 'Connect',  action: () => window.open('https://github.com/ysonkhiya122', '_blank', 'noopener') },
-  { id: 'linkedin',     label: 'Open LinkedIn',      category: 'Connect',  action: () => window.open('https://linkedin.com/in/yash-sonkhiya', '_blank', 'noopener') },
-]
+const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.userAgent)
 
-function scrollTo(id: string) {
-  document.querySelector(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+function scrollToId(id: string) {
+  const target = document.querySelector(id)
+  if (!target) return
+  target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  history.replaceState(null, '', id)
+  ;(target as HTMLElement).focus({ preventScroll: true })
 }
 
-const isMac =
-  typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform)
+function openExternal(url: string) {
+  window.open(url, '_blank', 'noopener,noreferrer')
+}
 
-export default function CommandPalette() {
-  const [open,    setOpen]    = useState(false)
-  const [query,   setQuery]   = useState('')
+function buildCommands(openProject: (id: string) => void): Command[] {
+  const nav: Command[] = [
+    {
+      id: 'about',
+      label: 'About',
+      group: 'Jump to',
+      hint: '01',
+      run: () => scrollToId('#about'),
+    },
+    {
+      id: 'work',
+      label: 'Selected work',
+      group: 'Jump to',
+      hint: '02',
+      run: () => scrollToId('#work'),
+    },
+    {
+      id: 'experience',
+      label: 'Experience',
+      group: 'Jump to',
+      hint: '03',
+      run: () => scrollToId('#experience'),
+    },
+    {
+      id: 'skills',
+      label: 'Toolkit',
+      group: 'Jump to',
+      hint: '04',
+      run: () => scrollToId('#skills'),
+    },
+    {
+      id: 'contact',
+      label: 'Contact',
+      group: 'Jump to',
+      hint: '06',
+      run: () => scrollToId('#contact'),
+    },
+  ]
+
+  const cases: Command[] = content.projects.map((project) => ({
+    id: `case-${project.id}`,
+    label: project.name,
+    group: 'Case studies',
+    keywords: `${project.headline} ${project.stack.join(' ')}`,
+    run: () => openProject(project.id),
+  }))
+
+  const actions: Command[] = [
+    {
+      id: 'email',
+      label: 'Copy email address',
+      group: 'Actions',
+      keywords: 'contact mail',
+      run: () => {
+        void navigator.clipboard.writeText(site.email)
+      },
+    },
+    {
+      id: 'mail',
+      label: 'Send an email',
+      group: 'Actions',
+      keywords: 'contact hire',
+      run: () => {
+        window.location.href = `mailto:${site.email}`
+      },
+    },
+    {
+      id: 'cv',
+      label: 'Download CV (PDF)',
+      group: 'Actions',
+      keywords: 'resume pdf',
+      run: () => openExternal('/yash-sonkhiya-cv.pdf'),
+    },
+    {
+      id: 'github',
+      label: 'Open GitHub',
+      group: 'Elsewhere',
+      run: () => openExternal(site.links.github),
+    },
+    {
+      id: 'linkedin',
+      label: 'Open LinkedIn',
+      group: 'Elsewhere',
+      run: () => openExternal(site.links.linkedin),
+    },
+    {
+      id: 'print',
+      label: 'Print this page',
+      group: 'Actions',
+      keywords: 'pdf save resume',
+      run: () => window.print(),
+    },
+  ]
+
+  return [...nav, ...cases, ...actions]
+}
+
+export default function CommandPalette({
+  onOpenProject,
+}: {
+  onOpenProject?: (id: string) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('')
   const [focused, setFocused] = useState(0)
-  const inputRef   = useRef<HTMLInputElement>(null)
-  const paletteRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const dialogRef = useRef<HTMLDivElement>(null)
   const restoreRef = useRef<HTMLElement | null>(null)
 
-  const filtered = COMMANDS.filter((c) =>
-    c.label.toLowerCase().includes(query.toLowerCase())
-  )
-  const activeId =
-    filtered[focused] ? `cmd-option-${filtered[focused].id}` : undefined
+  const commands = useMemo(() => buildCommands((id) => onOpenProject?.(id)), [onOpenProject])
+
+  const filtered = useMemo(() => {
+    const needle = query.trim().toLowerCase()
+    if (!needle) return commands
+    return commands.filter((command) =>
+      `${command.label} ${command.group} ${command.keywords ?? ''}`
+        .toLowerCase()
+        .includes(needle),
+    )
+  }, [commands, query])
 
   const close = useCallback(() => {
     setOpen(false)
     setQuery('')
-    // Return focus to wherever the user was before opening.
+    setFocused(0)
     restoreRef.current?.focus()
     restoreRef.current = null
   }, [])
 
-  const run = useCallback((cmd: Command) => {
-    close()
-    setTimeout(cmd.action, 100)
-  }, [close])
+  const run = useCallback(
+    (command: Command) => {
+      close()
+      // Defer so focus restoration happens before the action scrolls.
+      window.setTimeout(command.run, 60)
+    },
+    [close],
+  )
 
-  // Global shortcut: only Cmd/Ctrl+K is listened for while closed.
+  // Global shortcut and a public custom event so any component (the
+  // nav hint, for example) can open the palette without prop drilling.
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault()
-        setOpen((v) => {
-          if (!v) {
-            restoreRef.current = document.activeElement as HTMLElement
-            setFocused(0)
-          } else {
-            setQuery('')
-          }
-          return !v
-        })
+    const toggle = () => {
+      setOpen((current) => {
+        if (!current) {
+          restoreRef.current = document.activeElement as HTMLElement
+          setFocused(0)
+        }
+        return !current
+      })
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        toggle()
       }
     }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
+
+    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('open-command-palette', toggle)
+    return () => {
+      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('open-command-palette', toggle)
+    }
   }, [])
 
-  // Palette-local keyboard handling — attached only while open.
   useEffect(() => {
     if (!open) return
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault()
-        close()
-        return
-      }
-      if (e.key === 'ArrowDown') {
-        e.preventDefault()
-        setFocused((v) => (filtered.length ? (v + 1) % filtered.length : 0))
-      }
-      if (e.key === 'ArrowUp') {
-        e.preventDefault()
-        setFocused((v) => (filtered.length ? (v - 1 + filtered.length) % filtered.length : 0))
-      }
-      if (e.key === 'Enter' && filtered[focused]) {
-        e.preventDefault()
-        run(filtered[focused])
-      }
-      // Focus trap: keep Tab inside the dialog.
-      if (e.key === 'Tab') {
-        const nodes = paletteRef.current?.querySelectorAll<HTMLElement>(
-          'input, button, [tabindex]:not([tabindex="-1"])'
-        )
-        if (!nodes || nodes.length === 0) return
-        const first = nodes[0]
-        const last = nodes[nodes.length - 1]
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault()
-          last.focus()
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault()
-          first.focus()
-        }
-      }
-    }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [open, focused, filtered, close, run])
-
-  // Focus the input and lock body scroll while open.
-  useEffect(() => {
-    if (open) setTimeout(() => inputRef.current?.focus(), 60)
-    document.body.style.overflow = open ? 'hidden' : ''
+    const timer = window.setTimeout(() => {
+      inputRef.current?.focus()
+    }, 30)
+    document.documentElement.classList.add('is-scroll-locked')
     return () => {
-      document.body.style.overflow = ''
+      window.clearTimeout(timer)
+      document.documentElement.classList.remove('is-scroll-locked')
     }
   }, [open])
 
-  // Group by category
-  const grouped = filtered.reduce<Record<string, Command[]>>((acc, cmd) => {
-    if (!acc[cmd.category]) acc[cmd.category] = []
-    acc[cmd.category].push(cmd)
+  // Clamp rather than sync: when the query narrows the list, the
+  // cursor is derived from the result count instead of being written
+  // back through an effect (which would cause a cascading render).
+  const cursor = filtered.length === 0 ? 0 : Math.min(focused, filtered.length - 1)
+
+  useEffect(() => {
+    if (!open) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        close()
+        return
+      }
+      if (event.key === 'ArrowDown') {
+        event.preventDefault()
+        setFocused((current) =>
+          filtered.length ? (Math.min(current, filtered.length - 1) + 1) % filtered.length : 0,
+        )
+        return
+      }
+      if (event.key === 'ArrowUp') {
+        event.preventDefault()
+        setFocused((current) => {
+          const size = filtered.length
+          if (size === 0) return 0
+          const from = Math.min(current, size - 1)
+          return (from - 1 + size) % size
+        })
+        return
+      }
+      if (event.key === 'Enter' && filtered[cursor]) {
+        event.preventDefault()
+        run(filtered[cursor])
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [open, filtered, cursor, close, run])
+
+  // Keep the active option scrolled into view without scrollIntoView
+  // fighting the page.
+  const activeId = filtered[cursor] ? `cmd-${filtered[cursor].id}` : undefined
+  useEffect(() => {
+    if (!open || !activeId) return
+    document.getElementById(activeId)?.scrollIntoView({ block: 'nearest' })
+  }, [activeId, open])
+
+  if (!open) return null
+
+  const grouped = filtered.reduce<Record<string, Command[]>>((acc, command) => {
+    ;(acc[command.group] ??= []).push(command)
     return acc
   }, {})
 
-  let flatIndex = -1
-
   return (
-    <>
-      {/* Trigger hint — bottom left */}
-      <button
-        className={styles.trigger}
-        onClick={() => {
-          restoreRef.current = document.activeElement as HTMLElement
-          setFocused(0)
-          setOpen(true)
-        }}
-        aria-label="Open command palette"
-        aria-haspopup="dialog"
-        data-cursor-hover
+    <div className={styles.overlay}>
+      <div
+        ref={dialogRef}
+        className={styles.palette}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Command palette"
       >
-        <span className={styles.triggerKbd}>{isMac ? '⌘' : 'Ctrl'}</span>
-        <span className={styles.triggerKbd}>K</span>
-        <span className={styles.triggerLabel}>Command</span>
-      </button>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            className={styles.overlay}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            onClick={close}
+        <div className={styles.inputRow}>
+          <svg
+            className={styles.searchIcon}
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            aria-hidden="true"
           >
-            <motion.div
-              ref={paletteRef}
-              className={styles.palette}
-              initial={{ opacity: 0, scale: 0.97, y: -8 }}
-              animate={{ opacity: 1, scale: 1,    y: 0  }}
-              exit={{    opacity: 0, scale: 0.97, y: -8  }}
-              transition={{ duration: 0.18, ease: 'easeOut' }}
-              onClick={(e) => e.stopPropagation()}
-              role="dialog"
-              aria-modal="true"
-              aria-label="Command palette"
-            >
-              <div className={styles.inputRow}>
-                <span className={styles.searchIcon} aria-hidden="true">⌕</span>
-                <input
-                  ref={inputRef}
-                  className={styles.input}
-                  placeholder="Type a command or search…"
-                  value={query}
-                  onChange={(e) => { setQuery(e.target.value); setFocused(0) }}
-                  role="combobox"
-                  aria-expanded="true"
-                  aria-controls="cmd-listbox"
-                  aria-activedescendant={activeId}
-                  aria-label="Search commands"
-                />
-                <kbd className={styles.escKbd}>esc</kbd>
-              </div>
+            <circle
+              cx="6"
+              cy="6"
+              r="4.4"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              fill="none"
+            />
+            <path
+              d="M9.4 9.4 12.5 12.5"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              strokeLinecap="round"
+            />
+          </svg>
+          <input
+            ref={inputRef}
+            className={styles.input}
+            value={query}
+            onChange={(event) => {
+              setQuery(event.target.value)
+              setFocused(0)
+            }}
+            placeholder="Search sections, case studies, actions…"
+            aria-label="Search commands"
+            role="combobox"
+            aria-expanded="true"
+            aria-controls="command-results"
+            aria-activedescendant={activeId}
+            autoComplete="off"
+            spellCheck={false}
+          />
+          <button
+            type="button"
+            className={styles.esc}
+            onClick={close}
+            aria-label="Close command palette"
+          >
+            esc
+          </button>
+        </div>
 
-              <div className={styles.results} role="listbox" id="cmd-listbox" aria-label="Commands">
-                {Object.entries(grouped).map(([category, cmds]) => (
-                  <div key={category} className={styles.group}>
-                    <p className={styles.groupLabel}>{category}</p>
-                    {cmds.map((cmd) => {
-                      flatIndex += 1
-                      const idx = flatIndex
-                      const isFocused = idx === focused
-                      return (
-                        <button
-                          key={cmd.id}
-                          id={`cmd-option-${cmd.id}`}
-                          className={`${styles.item} ${isFocused ? styles.active : ''}`}
-                          onClick={() => run(cmd)}
-                          onMouseEnter={() => setFocused(idx)}
-                          role="option"
-                          aria-selected={isFocused}
-                          tabIndex={-1}
-                          data-cursor-hover
-                        >
-                          <span className={styles.itemLabel}>{cmd.label}</span>
-                          {cmd.shortcut && (
-                            <kbd className={styles.shortcut}>{cmd.shortcut}</kbd>
-                          )}
-                        </button>
-                      )
-                    })}
-                  </div>
-                ))}
-                {filtered.length === 0 && (
-                  <p className={styles.empty} role="status">No results for "{query}"</p>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+        <div
+          className={styles.results}
+          id="command-results"
+          role="listbox"
+          aria-label="Results"
+        >
+          {filtered.length === 0 && (
+            <p className={styles.empty}>
+              Nothing matches “{query}”. Try <em>work</em>, <em>cv</em> or <em>email</em>.
+            </p>
+          )}
+
+          {Object.entries(grouped).map(([group, items]) => (
+            <div key={group} className={styles.group} role="group" aria-label={group}>
+              <p className={styles.groupLabel} aria-hidden="true">
+                {group}
+              </p>
+              {items.map((command) => {
+                const index = filtered.indexOf(command)
+                return (
+                  <button
+                    key={command.id}
+                    id={`cmd-${command.id}`}
+                    type="button"
+                    role="option"
+                    aria-selected={index === cursor}
+                    tabIndex={-1}
+                    className={styles.option}
+                    data-active={index === cursor || undefined}
+                    onMouseEnter={() => setFocused(index)}
+                    onClick={() => run(command)}
+                  >
+                    <span className={styles.optionLabel}>{command.label}</span>
+                    {command.hint && <span className={styles.optionHint}>{command.hint}</span>}
+                  </button>
+                )
+              })}
+            </div>
+          ))}
+        </div>
+
+        <div className={styles.footer}>
+          <span>
+            <kbd>↑</kbd>
+            <kbd>↓</kbd> navigate
+          </span>
+          <span>
+            <kbd>↵</kbd> open
+          </span>
+          <span>
+            <kbd>{isMac ? '⌘' : 'ctrl'}</kbd>
+            <kbd>K</kbd> toggle
+          </span>
+        </div>
+      </div>
+    </div>
   )
 }

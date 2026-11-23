@@ -1,28 +1,62 @@
 import { render, screen } from '@testing-library/react'
-import Projects from '@/components/Projects/Projects'
+import userEvent from '@testing-library/user-event'
+import Projects from './Projects'
+import { content } from '@/content'
 
 describe('Projects', () => {
-  it('renders the section heading', () => {
+  it('renders one card per case study', () => {
     render(<Projects />)
-    expect(screen.getByRole('heading', { name: /projects/i })).toBeInTheDocument()
+    const headings = screen.getAllByRole('heading', { level: 3 })
+    expect(headings).toHaveLength(content.projects.length)
   })
 
-  it('renders the featured ApexOn project', () => {
+  it('leads with outcomes rather than a feature list', () => {
     render(<Projects />)
-    expect(screen.getByText('ApexOn')).toBeInTheDocument()
+    for (const project of content.projects) {
+      expect(screen.getByText(project.headline)).toBeInTheDocument()
+    }
   })
 
-  it('renders all three project cards', () => {
+  it('never links to a live URL for an internal project', () => {
     render(<Projects />)
-    const articles = document.querySelectorAll('article')
-    expect(articles.length).toBe(3)
+    for (const project of content.projects) {
+      if (project.status !== 'internal') continue
+      for (const link of project.links) {
+        expect(
+          screen.queryByRole('link', { name: new RegExp(link.href) }),
+        ).not.toBeInTheDocument()
+      }
+    }
   })
 
-  it('renders working GitHub and demo links for the featured project', () => {
+  it('marks external links with a safe rel attribute', () => {
     render(<Projects />)
-    const github = screen.getByText('GitHub').closest('a')
-    const demo = screen.getByText('Live demo').closest('a')
-    expect(github).toHaveAttribute('href', 'https://github.com/ysonkhiya122/ApexOn')
-    expect(demo).toHaveAttribute('href', 'https://apexon.netlify.app/')
+    for (const link of screen.getAllByRole('link')) {
+      expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+      expect(link).toHaveAttribute('target', '_blank')
+    }
+  })
+
+  it('opens the case study dialog on demand', async () => {
+    const user = userEvent.setup()
+    render(<Projects />)
+
+    const buttons = screen.getAllByRole('button', { name: /read the case study/i })
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+    await user.click(buttons[0]!)
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    // The dialog shows the reasoning, not just the description.
+    expect(screen.getByText('Decisions and trade-offs')).toBeInTheDocument()
+  })
+
+  it('closes the dialog and unmounts its content', async () => {
+    const user = userEvent.setup()
+    render(<Projects />)
+
+    await user.click(screen.getAllByRole('button', { name: /read the case study/i })[0]!)
+    await user.click(screen.getByRole('button', { name: 'Close case study' }))
+
+    expect(screen.queryByText('Decisions and trade-offs')).not.toBeInTheDocument()
   })
 })

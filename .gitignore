@@ -1,21 +1,39 @@
-# Dependencies
-node_modules/
+# dependencies
+node_modules
 
-# Build output
-dist/
-coverage/
+# build output
+dist
+dist-ssr
+*.local
 
-# Logs
-*.log
-npm-debug.log*
+# test / tooling artefacts
+coverage
+.tsbuildinfo
+*.tsbuildinfo
 
-# Editor / OS
+# editor
 .vscode/*
 !.vscode/extensions.json
-.idea/
+.idea
 .DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# Env
+# env
 .env
 .env.*
 !.env.example
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# local screenshots from the visual regression script
+shots
+*.shot.mjs
+shoot*.mjs

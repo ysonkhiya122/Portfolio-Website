@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://yash-sonkhiya.netlify.app/sitemap.xml
+# Nothing private here, but keep crawlers out of build noise.
+Disallow: /assets/
+
+Sitemap: https://yash-sonkhiya.com/sitemap.xml

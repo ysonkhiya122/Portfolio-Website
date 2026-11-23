@@ -1,70 +1,151 @@
+import { useState } from 'react'
+import { content } from '@/content'
+import type { Project } from '@/content'
 import { useReveal } from '@/hooks/useReveal'
-import { projects } from '@/data/portfolio'
-import type { Project } from '@/types'
+import Reveal from '@/components/ui/Reveal'
+import CaseStudyDialog from '@/components/CaseStudyDialog/CaseStudyDialog'
 import styles from './Projects.module.scss'
 
-function ProjectCard({ project, index }: { project: Project; index: number }) {
-  return (
-    <article
-      className={`reveal ${styles.card} ${project.featured ? styles.featured : ''}`}
-      style={{ transitionDelay: `${index * 0.06}s` }}
-    >
-      <p className={styles.number}>{project.number}</p>
-      <h3 className={styles.name}>{project.name}</h3>
-      <p className={styles.subtitle}>{project.subtitle}</p>
-      <p className={styles.desc}>{project.description}</p>
+const STATUS_LABEL: Record<Project['status'], string> = {
+  live: 'Live',
+  internal: 'In production',
+  archived: 'Archived',
+}
 
-      <div className={styles.tags}>
-        {project.tags.map((tag) => (
-          <span key={tag} className="tag">{tag}</span>
-        ))}
+const LINK_LABEL: Record<string, string> = {
+  live: 'Live',
+  code: 'Code',
+  docs: 'Docs',
+  'case-study': 'Case study',
+}
+
+function ArrowUpRight() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+      <path
+        d="M3 9 9 3M9 3H4M9 3v5"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function ProjectCard({
+  project,
+  order,
+  onOpen,
+}: {
+  project: Project
+  order: number
+  onOpen: () => void
+}) {
+  const externalLinks = project.links.filter((link) => link.kind !== 'case-study')
+
+  return (
+    <Reveal as="article" order={order} className={styles.card}>
+      <div className={styles.cardTop}>
+        <span className={`chip ${project.status === 'live' ? 'chip--live' : ''}`}>
+          {project.status === 'live' && <span className={styles.liveDot} aria-hidden="true" />}
+          {STATUS_LABEL[project.status]}
+        </span>
+        <span className={styles.timeframe}>{project.timeframe}</span>
       </div>
 
-      <div className={styles.footer}>
-        {project.links.length > 0 ? (
-          <div className={styles.links}>
-            {project.links.map((link) => (
+      <div className={styles.titleBlock}>
+        <h3 className={styles.name}>{project.name}</h3>
+        <p className={styles.headline}>{project.headline}</p>
+        <p className={styles.role}>{project.role}</p>
+      </div>
+
+      <ul className={styles.impact} aria-label={`${project.name} outcomes`}>
+        {project.impact.map((metric) => (
+          <li key={metric.label} className={styles.impactItem}>
+            <span className={styles.impactValue}>{metric.value}</span>
+            <span className={styles.impactLabel}>{metric.label}</span>
+          </li>
+        ))}
+      </ul>
+
+      <ul className={styles.stack} aria-label={`${project.name} stack`}>
+        {project.stack.map((tech) => (
+          <li key={tech} className="chip">
+            {tech}
+          </li>
+        ))}
+      </ul>
+
+      <div className={styles.cardFoot}>
+        <button
+          type="button"
+          className="btn btn--quiet"
+          onClick={onOpen}
+          aria-haspopup="dialog"
+        >
+          Read the case study
+          <span aria-hidden="true">→</span>
+        </button>
+
+        {externalLinks.length > 0 && (
+          <span className={styles.external}>
+            {externalLinks.map((link) => (
               <a
-                key={link.label}
+                key={link.href}
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={styles.link}
+                className={styles.externalLink}
               >
-                {link.label}
-                <span className={styles.arrow} aria-hidden="true">↗</span>
+                {LINK_LABEL[link.kind] ?? link.label}
+                <ArrowUpRight />
               </a>
             ))}
-          </div>
-        ) : project.note ? (
-          <span className={styles.note}>{project.note}</span>
-        ) : null}
+          </span>
+        )}
       </div>
-    </article>
+    </Reveal>
   )
 }
 
 export default function Projects() {
-  const sectionRef = useReveal()
+  const ref = useReveal<HTMLElement>()
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const active = content.projects.find((project) => project.id === activeId) ?? null
 
   return (
     <section
-      id="projects"
-      className={`section-base ${styles.projects}`}
-      ref={sectionRef as React.RefObject<HTMLElement>}
+      id="work"
+      ref={ref}
+      className="section section--ruled"
+      aria-labelledby="work-title"
     >
       <div className="container">
-        <div className="section-header">
-          <span className="section-header__index">03</span>
-          <h2 className="section-header__title">Projects</h2>
-        </div>
+        <Reveal className={styles.head}>
+          <p className="eyebrow">02 / Selected work</p>
+          <h2 id="work-title" className="section-title">
+            Three systems, and the decisions behind them.
+          </h2>
+          <p className="lede">
+            Feature lists are easy to fake. These are the trade-offs I actually argued for, and
+            the numbers that came out of them.
+          </p>
+        </Reveal>
 
         <div className={styles.grid}>
-          {projects.map((project, i) => (
-            <ProjectCard key={project.id} project={project} index={i} />
+          {content.projects.map((project, index) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              order={index}
+              onOpen={() => setActiveId(project.id)}
+            />
           ))}
         </div>
       </div>
+
+      <CaseStudyDialog project={active} onClose={() => setActiveId(null)} />
     </section>
   )
 }

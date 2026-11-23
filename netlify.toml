@@ -1,28 +1,43 @@
 [build]
-  command = "npm run build"
+  command = "npm run validate && npm run build"
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "22"
+  NPM_FLAGS = "--no-audit --no-fund"
 
-# ─── Security headers ────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────
+#  SECURITY HEADERS
+#
+#  CSP notes:
+#   • 'unsafe-inline' is required for style-src only because React
+#     writes inline style attributes (cursor position, reveal delays)
+#     and SCSS modules inject nothing. Scripts remain strict.
+#   • connect-src 'self' covers the Netlify Forms POST on the same
+#     origin. If analytics is added, extend this list deliberately.
+#   • upgrade-insecure-requests is omitted on purpose: the site has no
+#     mixed-content surface and Netlify already redirects to HTTPS.
+# ─────────────────────────────────────────────────────────────
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "DENY"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'; manifest-src 'self'"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
     X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self' mailto:"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Resource-Policy = "same-origin"
+    X-XSS-Protection = "0"
 
-# ─── Caching ─────────────────────────────────────────────────────
-# Hashed assets (JS/CSS/fonts) are immutable — cache for a year.
+# Hashed assets are immutable.
 [[headers]]
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# HTML must always revalidate so deploys are picked up instantly.
+# HTML always revalidates, so a deploy is live immediately.
 [[headers]]
   for = "/*.html"
   [headers.values]
@@ -32,3 +47,21 @@
   for = "/"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+# Service worker / manifest should not be cached hard.
+[[headers]]
+  for = "/site.webmanifest"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+# SPA-ish behaviour: one page, but unknown paths still resolve.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# The print view doubles as the CV. Serve it as a download where asked.
+[[redirects]]
+  from = "/cv"
+  to = "/yash-sonkhiya-cv.pdf"
+  status = 301

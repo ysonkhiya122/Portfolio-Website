@@ -1,46 +1,51 @@
-import { render, screen, fireEvent } from '@testing-library/react'
-import Nav from '@/components/Nav/Nav'
+import { render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import Nav from './Nav'
 
 describe('Nav', () => {
-  it('renders the logo as a home link', () => {
+  it('exposes a single primary navigation landmark', () => {
     render(<Nav />)
-    const logo = screen.getByLabelText(/yash sonkhiya — home/i)
-    expect(logo).toHaveAttribute('href', '/')
+    expect(screen.getByRole('navigation', { name: 'Primary' })).toBeInTheDocument()
   })
 
-  it('renders all nav links (desktop and mobile menus)', () => {
-    render(<Nav />)
-    for (const label of ['About', 'Experience', 'Projects', 'Skills', 'Contact']) {
-      // Each link exists twice: desktop link row + mobile menu panel.
-      expect(screen.getAllByText(label)).toHaveLength(2)
+  it('links to every section that exists on the page', () => {
+    const { container } = render(<Nav />)
+    // Section targets are rendered as anchors; assert the hrefs are real.
+    for (const id of ['#about', '#work', '#experience', '#skills', '#contact']) {
+      expect(
+        within(container)
+          .getAllByRole('link')
+          .some((a) => a.getAttribute('href') === id),
+      ).toBe(true)
     }
   })
 
-  it('renders the hire me CTA', () => {
+  it('toggles the mobile disclosure and reports state via aria-expanded', async () => {
+    const user = userEvent.setup()
     render(<Nav />)
-    expect(screen.getAllByText(/hire me/i).length).toBeGreaterThan(0)
+
+    const trigger = screen.getByRole('button', { name: 'Open menu' })
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+
+    await user.click(trigger)
+    expect(screen.getByRole('button', { name: 'Close menu' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    )
   })
 
-  it('toggles the mobile menu via the hamburger button', () => {
+  it('closes the mobile menu with Escape and returns focus to the trigger', async () => {
+    const user = userEvent.setup()
     render(<Nav />)
-    const button = screen.getByRole('button', { name: /open menu/i })
-    expect(button).toHaveAttribute('aria-expanded', 'false')
 
-    fireEvent.click(button)
-    expect(button).toHaveAttribute('aria-expanded', 'true')
-    expect(screen.getByRole('button', { name: /close menu/i })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Open menu' }))
+    await user.keyboard('{Escape}')
 
-    fireEvent.click(button)
-    expect(button).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.getByRole('button', { name: 'Open menu' })).toHaveFocus()
   })
 
-  it('closes the mobile menu on Escape', () => {
+  it('offers a keyboard shortcut affordance for the palette', () => {
     render(<Nav />)
-    const button = screen.getByRole('button', { name: /open menu/i })
-    fireEvent.click(button)
-    expect(button).toHaveAttribute('aria-expanded', 'true')
-
-    fireEvent.keyDown(window, { key: 'Escape' })
-    expect(button).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.getByRole('button', { name: 'Open command palette' })).toBeInTheDocument()
   })
 })

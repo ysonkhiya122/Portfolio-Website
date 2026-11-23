@@ -1,32 +1,65 @@
 .footer {
-  padding: 40px 0;
-  border-top: 1px solid $c-border;
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid $c-rule;
+  padding-block: $space-5;
 }
 
 .inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: $space-5;
+  flex-wrap: wrap;
+}
 
-  @media (max-width: $bp-mobile) {
-    flex-direction: column;
-    gap: $space-xs;
-    text-align: center;
-  }
+.left {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.mark {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  font-family: $font-mono;
+  font-size: 10px;
+  font-weight: 600;
+  color: $c-ink-muted;
+  border: 1px solid $c-rule-strong;
+  border-radius: $radius-sm;
 }
 
 .copy {
-  font-size: 12px;
-  color: $c-text-muted;
+  font-size: $text-xs;
+  color: $c-ink-faint;
 }
 
-.built {
-  font-size: 12px;
-  color: $c-text-muted;
-  font-family: $font-mono;
+.links {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+  font-size: $text-xs;
 
-  span {
-    color: $c-text-muted;
-    font-family: $font-sans;
+  a {
+    color: $c-ink-muted;
+    transition: color $dur-fast $ease-out;
+
+    &:hover {
+      color: $c-ink;
+    }
+  }
+}
+
+.stack {
+  font-family: $font-mono;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: $c-ink-faint;
+
+  @media (max-width: $bp-md) {
+    display: none;
   }
 }
