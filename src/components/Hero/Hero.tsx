@@ -1,4 +1,5 @@
 import { site } from '@/content/site'
+import { promotionPhrase } from '@/content/derived'
 import { heroStats } from '@/content/portfolio'
 import styles from './Hero.module.scss'
 
@@ -57,8 +58,10 @@ export default function Hero() {
           internal tools that replace a spreadsheet nobody trusts.
           <span className={styles.ledeSub}>
             {' '}
-            Promoted to senior in 18 months. Currently taking the frontend of four production
-            applications from React 16 to 19 without a single regression.
+            Promoted to senior within {promotionPhrase()} of joining. Currently taking the
+            frontend of{' '}
+            {heroStats.find((stat) => stat.label === 'Apps owned in prod')?.value ?? 'four'}{' '}
+            production applications from React 16 to 19 without a single regression.
           </span>
         </p>
 

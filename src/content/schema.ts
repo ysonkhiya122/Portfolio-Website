@@ -111,7 +111,16 @@ export const faqSchema = z.strictObject({
   answer: z.string().min(30),
 })
 
+export const aboutSchema = z.strictObject({
+  // `{YEARS}` is interpolated from the employment dates at render time, so
+  // it is allowed here but never counted as a hardcoded duration.
+  opener: z.string().min(40),
+  paragraphs: z.array(z.string().min(40)).min(1),
+  principles: z.array(z.object({ title: z.string().min(3), body: z.string().min(20) })).min(1),
+})
+
 export const contentSchema = z.strictObject({
+  about: aboutSchema,
   heroStats: z.array(statSchema).length(4),
   projects: z.array(projectSchema).min(2),
   experience: z.array(experienceSchema).min(1),

@@ -1,5 +1,6 @@
 import { contentSchema } from './schema'
 import {
+  about,
   achievements,
   education,
   experience,
@@ -11,6 +12,7 @@ import {
 } from './portfolio'
 
 const payload = {
+  about,
   heroStats,
   projects,
   experience,

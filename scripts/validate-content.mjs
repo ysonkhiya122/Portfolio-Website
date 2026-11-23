@@ -32,6 +32,9 @@ async function loadContentModule() {
 }
 
 const CONTENT_KEYS = [
+  // `about` was missing from this list, which meant the About prose — the
+  // most-edited copy on the site — was never schema-validated at all.
+  'about',
   'heroStats',
   'projects',
   'experience',
@@ -43,21 +46,21 @@ const CONTENT_KEYS = [
 ]
 
 async function main() {
-  const { contentSchema } = await import(
-    `file://${path.join(root, 'node_modules', '.cache', 'schema-check.mjs')}?t=${Date.now()}`
-  ).catch(async () => {
-    const { build } = await import('esbuild')
-    const outfile = path.join(root, 'node_modules', '.cache', 'schema-check.mjs')
-    await build({
-      entryPoints: [path.join(root, 'src/content/schema.ts')],
-      bundle: true,
-      format: 'esm',
-      platform: 'node',
-      outfile,
-      logLevel: 'silent',
-    })
-    return import(`file://${outfile}?t=${Date.now()}`)
+  // Always rebuild. This previously imported the cached bundle first and
+  // only compiled on failure — so after the first run, every subsequent
+  // schema edit was silently ignored and the gate validated against a
+  // stale contract. A gate that cannot see your change is worse than none.
+  const { build } = await import('esbuild')
+  const schemaOut = path.join(root, 'node_modules', '.cache', 'schema-check.mjs')
+  await build({
+    entryPoints: [path.join(root, 'src/content/schema.ts')],
+    bundle: true,
+    format: 'esm',
+    platform: 'node',
+    outfile: schemaOut,
+    logLevel: 'silent',
   })
+  const { contentSchema } = await import(`file://${schemaOut}?t=${Date.now()}`)
 
   const mod = await loadContentModule()
   const payload = Object.fromEntries(CONTENT_KEYS.map((key) => [key, mod[key]]))
@@ -97,6 +100,29 @@ async function main() {
 
   const heroStats = result.data.heroStats
   if (heroStats.length !== 4) problems.push('hero must have exactly four stats')
+
+  // ── Durations must be derived, never typed.
+  //
+  // The site once claimed "promoted to senior in 18 months" in three
+  // places while its own dates spanned 23. Deriving the figure in one
+  // component does not help if prose hardcodes it somewhere else, so any
+  // duration-shaped claim in copy is rejected outright.
+  const DURATION_CLAIM = /\b\d+\s*(month|months|year|years)\b/i
+  const { about } = result.data
+  const proseFields = [
+    ...(about.opener ? [['about.opener', about.opener]] : []),
+    ...about.paragraphs.map((text, index) => [`about.paragraphs[${index}]`, text]),
+  ]
+
+  for (const [field, text] of proseFields) {
+    const match = DURATION_CLAIM.exec(text)
+    if (match) {
+      problems.push(
+        `${field} hardcodes a duration ("${match[0]}") — derive it from experience dates instead ` +
+          `(see src/content/derived.ts)`,
+      )
+    }
+  }
 
   if (problems.length > 0) {
     console.error('\n✖  Content house rules failed:\n')

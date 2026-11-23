@@ -3,6 +3,7 @@ import type { Experience as ExperienceEntry } from '@/content'
 import { formatRange, formatDuration } from '@/lib/format'
 import Reveal from '@/components/ui/Reveal'
 import Section from '@/components/ui/Section'
+import { tenurePhrase } from '@/content/derived'
 import { sectionEyebrow } from '@/content/sections'
 import styles from './Experience.module.scss'
 
@@ -67,7 +68,7 @@ export default function Experience() {
     <Section
       id="experience"
       eyebrow={sectionEyebrow('experience')}
-      title="Two roles, one promotion, three years of production."
+      title={`Two roles, one promotion, ${tenurePhrase()} years of production.`}
     >
       <div className={styles.timeline}>
         {content.experience.map((entry, index) => (

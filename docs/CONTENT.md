@@ -76,9 +76,10 @@ testimonials.
 | `highlights[]` | One achievement per bullet, minimum 20 chars                                    |
 
 > Durations, "N months after joining" and the total years of experience are
-> **derived from these dates**. Never type a duration by hand — that is exactly
-> how the old site came to claim "18 months to promotion" in one place and
-> 32 months in another.
+> **derived from these dates** via `src/content/derived.ts`, and the content
+> gate rejects hand-typed durations in prose. This is enforced, not just
+> advised: the site shipped a "18 months" claim in three places while its own
+> dates said 23, twice, and both times it survived a manual review.
 
 ### `src/content/notes.ts` — engineering write-ups
 
@@ -150,6 +151,13 @@ and the card shows "In production" with no outward link.
 
 **Ids are unique across projects and experience.** A duplicate fails the build,
 because ids become URL fragments.
+
+**No duration may be typed in prose.** Any `\d+ months/years` in the About
+copy fails the build. Durations are claims about the employment dates, so they
+come from `src/content/derived.ts` — `promotionPhrase()`, `tenurePhrase()`,
+`yearsOfExperience()`. The About opener uses a `{YEARS}` token that is
+interpolated at render time. This rule exists because the site shipped "18
+months" while its own dates said 23, twice.
 
 **Exactly four hero stats.** Two leaves the row ragged; five wraps badly. If
 you want three, delete one and adjust `.heroStats` in

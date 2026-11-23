@@ -14,10 +14,10 @@ export const heroStats = [
 
 export const about = {
   opener:
-    "I'm a frontend engineer in Delhi who has spent the last three years shipping software that field technicians and insurance agents open at 7am and can't afford to watch spin.",
+    "I'm a frontend engineer in Delhi who has spent the last {YEARS} years shipping software that field technicians and insurance agents open at 7am and can't afford to watch spin.",
   paragraphs: [
     'My day job is one of the least glamorous corners of the web, and I like it that way: real-time dispatch for field-service operations across seven European markets. Jobs arrive as WebSocket events while the user is looking at the screen. SLA timers run. If the map stutters, somebody misses a service window.',
-    'I joined as an associate and was promoted to senior in 18 months. The work that got me there was not a framework upgrade. It was earning the right to own a system end to end: writing the acceptance criteria, arguing with backend about the API contract, and shipping a whole internal product alone in fifteen days.',
+    'I joined as an associate and was promoted to senior there. The work that got me there was not a framework upgrade. It was earning the right to own a system end to end: writing the acceptance criteria, arguing with backend about the API contract, and shipping a whole internal product alone in fifteen days.',
     'I use AI tooling the way I use a compiler: as leverage on mechanical work, never as a substitute for understanding the system. That distinction is the subject of the internal talk I gave to leadership, and of how I review code today.',
   ],
   principles: [
