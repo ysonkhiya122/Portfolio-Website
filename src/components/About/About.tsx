@@ -1,76 +1,59 @@
-import { useReveal } from '@/hooks/useReveal'
-import AnimatedCounter from '@/components/AnimatedCounter/AnimatedCounter'
-import { aboutMetrics } from '@/data/portfolio'
+import { about } from '@/content'
+import { tenurePhrase } from '@/content/derived'
+import { site } from '@/content/site'
+import Reveal from '@/components/ui/Reveal'
+import Section from '@/components/ui/Section'
+import { sectionEyebrow } from '@/content/sections'
 import styles from './About.module.scss'
 
-const TAGS = [
-  'React 16–19', 'TypeScript', 'Redux Toolkit', 'SignalR',
-  'Auth0 / Entra SSO', 'Azure DevOps', 'Jest', 'GenAI workflows',
-]
-
 export default function About() {
-  const sectionRef = useReveal()
-
   return (
-    <section
-      id="about"
-      className={`section-base ${styles.about}`}
-      ref={sectionRef as React.RefObject<HTMLElement>}
-    >
-      <div className="container">
-        <div className="section-header">
-          <span className="section-header__index">01</span>
-          <h2 className="section-header__title">About</h2>
-        </div>
+    <Section id="about" eyebrow={sectionEyebrow('about')} title="Not a list of frameworks.">
+      <div className={styles.grid}>
+        <Reveal order={1} className={styles.prose}>
+          {/* The tenure is derived from the employment dates, not typed —
+              the site previously claimed three years in prose while its own
+              dates said otherwise. */}
+          <p className={styles.opener}>{about.opener.replace('{YEARS}', tenurePhrase())}</p>
+          {about.paragraphs.map((paragraph) => (
+            <p key={paragraph.slice(0, 32)}>{paragraph}</p>
+          ))}
+        </Reveal>
 
-        <div className={styles.grid}>
-          <div className={`reveal ${styles.prose}`}>
-            <p>
-              I'm a frontend engineer focused on building reliable, scalable interfaces that serve
-              real users at production scale. At a global IT consultancy I'm embedded within a team
-              delivering mission-critical web applications for a major European enterprise client —
-              seven countries, live operations, real stakes.
-            </p>
-            <p>
-              My practice spans React architecture, TypeScript engineering, real-time data systems,
-              and the integration of AI-assisted development workflows that have measurably reduced
-              delivery timelines and incident rates across sprint cycles.
-            </p>
-            <p>
-              I operate as sole frontend contributor on high-stakes builds — from designing UX
-              flows and component libraries to guiding backend API contracts for production scale.
-              That end-to-end ownership shapes how I think about both the craft and the code.
-            </p>
-            <div className={styles.tags}>
-              {TAGS.map((tag) => (
-                <span key={tag} className="tag">{tag}</span>
-              ))}
-            </div>
-          </div>
-
-          <div className={`reveal ${styles.metricsCol}`} style={{ transitionDelay: '0.12s' }}>
-            <p className={styles.metricsLabel}>Impact at a glance</p>
-            <div className={styles.metrics}>
-              {aboutMetrics.map((m) => (
-                <div key={m.label} className={styles.metric}>
-                  <span className={styles.metricValue}>
-                    <AnimatedCounter value={m.value} suffix={m.suffix} duration={1400} />
-                  </span>
-                  <span className={styles.metricLabel}>{m.label}</span>
+        <Reveal order={2} className={styles.aside} as="aside">
+          <h3 className={styles.asideTitle}>How I work</h3>
+          <ol className={styles.principles}>
+            {about.principles.map((principle, index) => (
+              <li key={principle.title} className={styles.principle}>
+                <span className={styles.principleIndex} aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <div>
+                  <h4 className={styles.principleTitle}>{principle.title}</h4>
+                  <p className={styles.principleBody}>{principle.body}</p>
                 </div>
-              ))}
-            </div>
+              </li>
+            ))}
+          </ol>
 
-            <div className={styles.callout}>
-              <span className={styles.calloutIndex}>›</span>
-              <p className={styles.calloutText}>
-                Presented an AI-assisted engineering workflow to senior leadership and business
-                stakeholders as an innovation initiative — not an experiment, a delivery framework.
-              </p>
+          <dl className={styles.facts}>
+            <div>
+              <dt>Based</dt>
+              <dd>
+                {site.location.city}, {site.location.region}
+              </dd>
             </div>
-          </div>
-        </div>
+            <div>
+              <dt>Timezone</dt>
+              <dd>IST (UTC+5:30)</dd>
+            </div>
+            <div>
+              <dt>Working style</dt>
+              <dd>{site.location.remoteNote}</dd>
+            </div>
+          </dl>
+        </Reveal>
       </div>
-    </section>
+    </Section>
   )
 }

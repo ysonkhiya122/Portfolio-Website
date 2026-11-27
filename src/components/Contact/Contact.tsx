@@ -1,74 +1,93 @@
-import { useReveal } from '@/hooks/useReveal'
-import { contactLinks } from '@/data/portfolio'
+import { site } from '@/content/site'
+import { content } from '@/content'
+import Reveal from '@/components/ui/Reveal'
+import Section from '@/components/ui/Section'
+import { sectionEyebrow } from '@/content/sections'
+import ContactForm from './ContactForm'
 import styles from './Contact.module.scss'
 
+const channels = [
+  { id: 'email', label: 'Email', value: site.email, href: `mailto:${site.email}` },
+  { id: 'linkedin', label: 'LinkedIn', value: 'in/yash-sonkhiya', href: site.links.linkedin },
+  { id: 'github', label: 'GitHub', value: '@ysonkhiya122', href: site.links.github },
+]
+
 export default function Contact() {
-  const sectionRef = useReveal()
-
   return (
-    <section
+    <Section
       id="contact"
-      className={`section-base ${styles.contact}`}
-      ref={sectionRef as React.RefObject<HTMLElement>}
+      eyebrow={sectionEyebrow('contact')}
+      title="Hiring for something where the frontend actually matters?"
     >
-      <div className="container">
-        <div className={`reveal ${styles.inner}`}>
-          <div className={styles.left}>
-            <h2 className={styles.heading}>
-              Let's build<br />something together.
-            </h2>
-            <p className={styles.sub}>
-              Open to senior frontend engineering roles, freelance contracts, and
-              technical collaborations. I typically respond within 24 hours.
-            </p>
-            <a
-              href="mailto:yashsonkhiya2195@gmail.com"
-              className="btn-primary"
-            >
-              Send an email ↗
-            </a>
-          </div>
+      <div className={styles.layout}>
+        <Reveal className={styles.left}>
+          <p className={styles.body}>
+            I am open to senior frontend roles and to short, well-scoped contracts. Tell me
+            what the product does and what is currently breaking, and I will tell you honestly
+            whether I am the right person.
+          </p>
 
-          <div className={styles.right}>
-            <div className={styles.links}>
-              {contactLinks.map((link) =>
-                link.href ? (
-                  <a
-                    key={link.id}
-                    href={link.href}
-                    target={link.href.startsWith('http') ? '_blank' : undefined}
-                    rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                    className={styles.link}
-                  >
-                    <div className={styles.linkLeft}>
-                      <span className={styles.linkIcon} aria-hidden="true">
-                        {link.icon}
-                      </span>
-                      <div>
-                        <p className={styles.linkLabel}>{link.label}</p>
-                        <p className={styles.linkValue}>{link.value}</p>
-                      </div>
-                    </div>
-                    <span className={styles.linkArrow} aria-hidden="true">↗</span>
-                  </a>
-                ) : (
-                  <div key={link.id} className={`${styles.link} ${styles.linkStatic}`}>
-                    <div className={styles.linkLeft}>
-                      <span className={styles.linkIcon} aria-hidden="true">
-                        {link.icon}
-                      </span>
-                      <div>
-                        <p className={styles.linkLabel}>{link.label}</p>
-                        <p className={styles.linkValue}>{link.value}</p>
-                      </div>
-                    </div>
-                  </div>
-                )
-              )}
+          <ul className={styles.channels}>
+            {channels.map((channel) => (
+              <li key={channel.id}>
+                <a
+                  href={channel.href}
+                  className={styles.channel}
+                  {...(channel.href.startsWith('http')
+                    ? { target: '_blank', rel: 'noopener noreferrer' }
+                    : {})}
+                >
+                  <span className={styles.channelLabel}>{channel.label}</span>
+                  <span className={styles.channelValue}>{channel.value}</span>
+                  <span className={styles.channelArrow} aria-hidden="true">
+                    ↗
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <dl className={styles.facts}>
+            <div>
+              <dt>Response time</dt>
+              <dd>Within one working day</dd>
             </div>
-          </div>
-        </div>
+            <div>
+              <dt>Timezone</dt>
+              <dd>IST · overlaps EU and UK mornings</dd>
+            </div>
+            <div>
+              <dt>Location</dt>
+              <dd>
+                {site.location.city}, {site.location.country}
+              </dd>
+            </div>
+          </dl>
+        </Reveal>
+
+        <Reveal order={1} className={styles.right}>
+          <ContactForm />
+        </Reveal>
       </div>
-    </section>
+
+      {content.faqs.length > 0 && (
+        <Reveal as="div" order={2} className={styles.faqs} aria-labelledby="faq-title">
+          <h3 id="faq-title" className={styles.faqTitle}>
+            Questions people actually ask
+          </h3>
+          <div className={styles.faqGrid}>
+            {content.faqs.map((faq) => (
+              <details key={faq.question} className={styles.faq}>
+                <summary className={styles.faqQuestion}>
+                  {faq.question}
+                  <span className={styles.faqMarker} aria-hidden="true" />
+                </summary>
+                <p className={styles.faqAnswer}>{faq.answer}</p>
+              </details>
+            ))}
+          </div>
+        </Reveal>
+      )}
+    </Section>
   )
 }

@@ -1,0 +1,12 @@
+{
+  "semi": false,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 95,
+  "tabWidth": 2,
+  "arrowParens": "always",
+  "overrides": [
+    { "files": "*.scss", "options": { "singleQuote": true } },
+    { "files": "*.md", "options": { "printWidth": 80, "proseWrap": "preserve" } }
+  ]
+}

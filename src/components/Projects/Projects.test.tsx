@@ -1,28 +1,59 @@
 import { render, screen } from '@testing-library/react'
-import Projects from '@/components/Projects/Projects'
+import userEvent from '@testing-library/user-event'
+import Projects from './Projects'
+import { content } from '@/content'
+
+const renderProjects = (onOpenProject = jest.fn()) => ({
+  onOpenProject,
+  ...render(<Projects onOpenProject={onOpenProject} />),
+})
 
 describe('Projects', () => {
-  it('renders the section heading', () => {
-    render(<Projects />)
-    expect(screen.getByRole('heading', { name: /projects/i })).toBeInTheDocument()
+  it('renders one card per case study', () => {
+    renderProjects()
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(content.projects.length)
   })
 
-  it('renders the featured ApexOn project', () => {
-    render(<Projects />)
-    expect(screen.getByText('ApexOn')).toBeInTheDocument()
+  it('leads with outcomes rather than a feature list', () => {
+    renderProjects()
+    for (const project of content.projects) {
+      expect(screen.getByText(project.headline)).toBeInTheDocument()
+    }
   })
 
-  it('renders all three project cards', () => {
-    render(<Projects />)
-    const articles = document.querySelectorAll('article')
-    expect(articles.length).toBe(3)
+  it('never links to a live URL for an internal project', () => {
+    renderProjects()
+    for (const project of content.projects) {
+      if (project.status !== 'internal') continue
+      for (const link of project.links) {
+        expect(
+          screen.queryByRole('link', { name: new RegExp(link.href) }),
+        ).not.toBeInTheDocument()
+      }
+    }
   })
 
-  it('renders working GitHub and demo links for the featured project', () => {
-    render(<Projects />)
-    const github = screen.getByText('GitHub').closest('a')
-    const demo = screen.getByText('Live demo').closest('a')
-    expect(github).toHaveAttribute('href', 'https://github.com/ysonkhiya122/ApexOn')
-    expect(demo).toHaveAttribute('href', 'https://apexon.netlify.app/')
+  it('marks external links with a safe rel attribute', () => {
+    renderProjects()
+    for (const link of screen.getAllByRole('link')) {
+      expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+      expect(link).toHaveAttribute('target', '_blank')
+    }
+  })
+
+  it('delegates opening a case study to the parent, so the URL stays the source of truth', async () => {
+    const user = userEvent.setup()
+    const { onOpenProject } = renderProjects()
+
+    await user.click(screen.getAllByRole('button', { name: /read the case study/i })[0]!)
+
+    expect(onOpenProject).toHaveBeenCalledTimes(1)
+    expect(onOpenProject).toHaveBeenCalledWith(content.projects[0]?.id)
+  })
+
+  it('does not mount a dialog of its own', () => {
+    renderProjects()
+    // The dialog is owned by App so that there is exactly one.
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 })

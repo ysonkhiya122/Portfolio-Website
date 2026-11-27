@@ -1,124 +1,107 @@
-import { motion } from "framer-motion";
-import TypewriterText from "@/components/TypewriterText/TypewriterText";
-import AnimatedCounter from "@/components/AnimatedCounter/AnimatedCounter";
-import OpenToWork from "@/components/OpenToWork/OpenToWork";
-import { heroStats } from "@/data/portfolio";
-import styles from "./Hero.module.scss";
+import { site } from '@/content/site'
+import { promotionPhrase } from '@/content/derived'
+import { heroStats } from '@/content/portfolio'
+import styles from './Hero.module.scss'
 
-const ROLES = [
-  "Senior Frontend Engineer",
-  "React & TypeScript Specialist",
-  "Enterprise UI Architect",
-  "GenAI-augmented Developer",
-];
-
-const container = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.11 } },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 22 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.55, ease: "easeOut" },
-  },
-};
+function ArrowUpRight() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+      <path
+        d="M3.5 9.5 9.5 3.5M9.5 3.5H4.6M9.5 3.5v4.9"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
 
 export default function Hero() {
-  const anchor = (e: React.MouseEvent<HTMLElement>, id: string) => {
-    e.preventDefault();
-    document
-      .querySelector(id)
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+  const scrollTo = (id: string) => (event: React.MouseEvent<HTMLAnchorElement>) => {
+    const target = document.querySelector(id)
+    if (!target) return
+    event.preventDefault()
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    // Keep the URL and the focus ring honest for keyboard users.
+    history.replaceState(null, '', id)
+    ;(target as HTMLElement).focus({ preventScroll: true })
+  }
 
   return (
-    <section id="hero" className={styles.hero}>
-      <div className="container">
-        <motion.div
-          className={styles.inner}
-          variants={container}
-          initial="hidden"
-          animate="visible"
-        >
-          <motion.div variants={item}>
-            <OpenToWork />
-          </motion.div>
-
-          <motion.h1 className={styles.name} variants={item}>
-            Yash Sonkhiya
-          </motion.h1>
-
-          <motion.div className={styles.roleRow} variants={item}>
-            <TypewriterText phrases={ROLES} className={styles.role} />
-          </motion.div>
-
-          <motion.p className={styles.summary} variants={item}>
-            Building enterprise-scale web applications for global clients across
-            seven European markets. Two years of end-to-end production ownership
-            spanning real-time systems, enterprise authentication, and
-            GenAI-driven engineering workflows. Promoted to Senior SWE in{" "}
-            <em>18 months</em>.
-          </motion.p>
-
-          <motion.div className={styles.actions} variants={item}>
-            <a
-              href="#contact"
-              className="btn-primary"
-              onClick={(e) => anchor(e, "#contact")}
-            >
-              Get in touch
-            </a>
-            <a
-              href="#experience"
-              className="btn-ghost"
-              onClick={(e) => anchor(e, "#experience")}
-            >
-              View work
-            </a>
-            <a
-              href="https://github.com/ysonkhiya122"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-ghost"
-              aria-label="GitHub"
-              data-cursor-hover
-            >
-              Projects
-            </a>
-          </motion.div>
-
-          <motion.div className={styles.stats} variants={item}>
-            {heroStats.map((s) => (
-              <div key={s.label} className={styles.stat}>
-                <span className={styles.statValue}>
-                  <AnimatedCounter
-                    value={s.value}
-                    suffix={s.suffix}
-                    duration={1600}
-                  />
-                </span>
-                <span className={styles.statLabel}>{s.label}</span>
-              </div>
-            ))}
-          </motion.div>
-
-          <motion.button
-            type="button"
-            className={styles.scrollCue}
-            variants={item}
-            aria-label="Scroll down to the About section"
-            onClick={(e) => anchor(e, "#about")}
-          >
-            <div className={styles.scrollLine} aria-hidden="true" />
-            <span className={styles.scrollLabel} aria-hidden="true">
-              scroll
+    <section className={styles.hero} aria-labelledby="hero-title">
+      <div className={`container ${styles.inner}`}>
+        <div className={styles.top}>
+          <p className={styles.eyebrow}>
+            <span className={styles.statusDot} aria-hidden="true" />
+            {site.availability.status}
+            <span className={styles.sep} aria-hidden="true">
+              /
             </span>
-          </motion.button>
-        </motion.div>
+            <span className={styles.loc}>{site.location.city}, IN · remote-friendly</span>
+          </p>
+        </div>
+
+        <h1 id="hero-title" className={styles.title}>
+          <span className={styles.titleName}>{site.name}</span>
+          <span className={styles.titleRole}>
+            {site.roleLong}
+            <span className={styles.cursor} aria-hidden="true">
+              _
+            </span>
+          </span>
+        </h1>
+
+        <p className={styles.lede}>
+          I build the interfaces people depend on when downtime is not an option: real-time
+          dispatch for <strong>seven European markets</strong>, enterprise dashboards, and
+          internal tools that replace a spreadsheet nobody trusts.
+          <span className={styles.ledeSub}>
+            {' '}
+            Promoted to senior within {promotionPhrase()} of joining. Currently taking the
+            frontend of{' '}
+            {heroStats.find((stat) => stat.label === 'Apps owned in prod')?.value ?? 'four'}{' '}
+            production applications from React 16 to 19 without a single regression.
+          </span>
+        </p>
+
+        <div className={styles.actions}>
+          <a href="#work" className="btn btn--primary" onClick={scrollTo('#work')}>
+            View case studies
+          </a>
+          <a href="#contact" className="btn btn--ghost" onClick={scrollTo('#contact')}>
+            Get in touch
+          </a>
+          <a
+            href={site.links.github}
+            className="btn btn--ghost"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub <ArrowUpRight />
+          </a>
+        </div>
+
+        <dl className={styles.stats}>
+          {heroStats.map((stat) => (
+            <div key={stat.label} className={styles.stat}>
+              <dt className={styles.statLabel}>{stat.label}</dt>
+              <dd className={styles.statValue}>
+                {stat.value}
+                <span className={styles.statSuffix}>{stat.suffix}</span>
+              </dd>
+            </div>
+          ))}
+        </dl>
       </div>
+
+      <a href="#about" className={styles.scrollCue} onClick={scrollTo('#about')}>
+        <span className="sr-only">Scroll to the about section</span>
+        <span className={styles.scrollCueLabel} aria-hidden="true">
+          scroll
+        </span>
+        <span className={styles.scrollCueLine} aria-hidden="true" />
+      </a>
     </section>
-  );
+  )
 }

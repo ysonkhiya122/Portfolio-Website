@@ -1,0 +1,19 @@
+{
+  "name": "Yash Sonkhiya — Senior Frontend Engineer",
+  "short_name": "Y. Sonkhiya",
+  "description": "Case studies and decisions from a senior frontend engineer.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#08080a",
+  "theme_color": "#08080a",
+  "lang": "en",
+  "icons": [
+    { "src": "/favicon-32.png", "sizes": "32x32", "type": "image/png" },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
