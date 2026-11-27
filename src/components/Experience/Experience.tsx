@@ -1,77 +1,80 @@
-import { useReveal } from "@/hooks/useReveal";
-import { motion } from "framer-motion";
-import { experience } from "@/data/portfolio";
-import Emphasis from "@/components/Emphasis/Emphasis";
-import styles from "./Experience.module.scss";
+import { content } from '@/content'
+import type { Experience as ExperienceEntry } from '@/content'
+import { formatRange, formatDuration } from '@/lib/format'
+import Reveal from '@/components/ui/Reveal'
+import Section from '@/components/ui/Section'
+import { tenurePhrase } from '@/content/derived'
+import { sectionEyebrow } from '@/content/sections'
+import styles from './Experience.module.scss'
+
+function TimelineEntry({ entry, order }: { entry: ExperienceEntry; order: number }) {
+  return (
+    <Reveal as="article" order={order} className={styles.entry}>
+      <div className={styles.rail} aria-hidden="true">
+        <span className={styles.node} data-current={entry.end === null || undefined} />
+      </div>
+
+      <div className={styles.body}>
+        <header className={styles.header}>
+          <div className={styles.headMain}>
+            <h3 className={styles.role}>{entry.role}</h3>
+            <p className={styles.org}>
+              {entry.company}
+              <span className={styles.orgSep} aria-hidden="true">
+                ·
+              </span>
+              {entry.location}
+            </p>
+          </div>
+
+          <p className={styles.dates}>
+            <time dateTime={entry.start}>{formatRange(entry.start, entry.end)}</time>
+            <span className={styles.duration}>{formatDuration(entry.start, entry.end)}</span>
+          </p>
+        </header>
+
+        <p className={styles.summary}>{entry.summary}</p>
+
+        <ul className={styles.highlights}>
+          {entry.highlights.map((highlight) => (
+            <li key={highlight.slice(0, 30)} className={styles.highlight}>
+              {highlight}
+            </li>
+          ))}
+        </ul>
+
+        {entry.promotion && (
+          <p className={styles.promotion}>
+            <span aria-hidden="true">↑</span>
+            {entry.promotion.title} ·{' '}
+            {formatRange(entry.promotion.date, null).replace(' — Present', '')}
+          </p>
+        )}
+
+        <ul className={styles.stack} aria-label="Technologies used">
+          {entry.stack.map((tech) => (
+            <li key={tech} className="chip">
+              {tech}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Reveal>
+  )
+}
 
 export default function Experience() {
-  const sectionRef = useReveal();
-
   return (
-    <section
+    <Section
       id="experience"
-      className={`section-base ${styles.experience}`}
-      ref={sectionRef as React.RefObject<HTMLElement>}
+      eyebrow={sectionEyebrow('experience')}
+      title={`Two roles, one promotion, ${tenurePhrase()} years of production.`}
     >
-      <div className="container">
-        <div className="section-header">
-          <span className="section-header__index">02</span>
-          <h2 className="section-header__title">Experience</h2>
-        </div>
-
-        <div className={styles.timeline}>
-          {/* Vertical track */}
-          <div className={styles.track} aria-hidden="true">
-            <motion.div
-              className={styles.trackFill}
-              initial={{ scaleY: 0 }}
-              whileInView={{ scaleY: 1 }}
-              viewport={{ once: true, amount: 0.1 }}
-              transition={{ duration: 1.2, ease: "easeOut" }}
-            />
-          </div>
-
-          <div className={styles.items}>
-            {experience.map((item, i) => (
-              <article
-                key={item.id}
-                className={`reveal ${styles.item}`}
-                style={{ transitionDelay: `${i * 0.1}s` }}
-              >
-                <div className={styles.card}>
-                  <div className={styles.cardHeader}>
-                    <div>
-                      <h3 className={styles.role}>{item.role}</h3>
-                      <div className={styles.meta}>
-                        <span className={styles.company}>{item.company}</span>
-                        <span className={styles.sep}>·</span>
-                        <span className={styles.location}>{item.location}</span>
-                        <span className={styles.sep}>·</span>
-                        <span className={styles.period}>{item.period}</span>
-                      </div>
-                    </div>
-                    <span
-                      className={`${styles.badge} ${styles[`badge--${item.badgeVariant}`]}`}
-                    >
-                      {item.badgeLabel}
-                    </span>
-                  </div>
-
-                  <p className={styles.summary}>{item.summary}</p>
-
-                  <ul className={styles.bullets}>
-                    {item.bullets.map((bullet, j) => (
-                      <li key={j}>
-                        <Emphasis text={bullet} />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
+      <div className={styles.timeline}>
+        {content.experience.map((entry, index) => (
+          <TimelineEntry key={entry.id} entry={entry} order={index} />
+        ))}
       </div>
-    </section>
-  );
+    </Section>
+  )
 }

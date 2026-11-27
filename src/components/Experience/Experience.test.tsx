@@ -1,27 +1,37 @@
 import { render, screen } from '@testing-library/react'
-import Experience from '@/components/Experience/Experience'
+import Experience from './Experience'
+import { content } from '@/content'
+import { formatRange } from '@/lib/format'
 
 describe('Experience', () => {
-  it('renders the section heading', () => {
+  it('renders each role as a heading', () => {
     render(<Experience />)
-    expect(screen.getByRole('heading', { name: /experience/i })).toBeInTheDocument()
+    for (const entry of content.experience) {
+      expect(screen.getByRole('heading', { name: entry.role })).toBeInTheDocument()
+    }
   })
 
-  it('renders both experience entries', () => {
+  it('formats dates from data rather than a hardcoded string', () => {
     render(<Experience />)
-    expect(screen.getByText('Senior Software Engineer — Frontend')).toBeInTheDocument()
-    expect(screen.getByText('Associate Software Engineer — React Developer')).toBeInTheDocument()
+    for (const entry of content.experience) {
+      expect(screen.getByText(formatRange(entry.start, entry.end))).toBeInTheDocument()
+    }
   })
 
-  it('renders the promotion badge on the senior role', () => {
+  it('shows "Present" only for the open-ended role', () => {
     render(<Experience />)
-    // "Promoted" appears in both the badge and a bullet — assert the badge.
-    expect(screen.getByText('Promoted · Apr 2026')).toBeInTheDocument()
+    const present = screen.getAllByText(/— Present/)
+    expect(present).toHaveLength(1)
   })
 
-  it('renders at least one bullet point per role', () => {
+  it('surfaces the promotion as a distinct marker', () => {
     render(<Experience />)
-    const bullets = document.querySelectorAll('li')
-    expect(bullets.length).toBeGreaterThan(0)
+    expect(screen.getByText(/promoted to senior/i)).toBeInTheDocument()
+  })
+
+  it('names the employer', () => {
+    const { container } = render(<Experience />)
+    const [first] = content.experience
+    expect(container.textContent).toContain(first?.company ?? '')
   })
 })

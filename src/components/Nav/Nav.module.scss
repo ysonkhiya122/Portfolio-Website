@@ -1,199 +1,261 @@
-.nav {
+.header {
   position: fixed;
+  inset-inline: 0;
   top: 0;
-  left: 0;
-  right: 0;
   z-index: 100;
-  height: $nav-height;
-  background: rgba(9, 9, 10, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid transparent;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 $container-pad;
   transition:
-    border-color $transition-base,
-    background $transition-base;
+    background-color $dur-base $ease-out,
+    border-color $dur-base $ease-out,
+    backdrop-filter $dur-base $ease-out;
 
-  &.scrolled {
-    background: rgba(9, 9, 10, 0.9);
-    border-bottom-color: $c-border;
+  // Near-opaque on scroll: at 0.72 alpha the card text underneath stayed
+  // legible through the bar, which reads as a rendering bug rather than
+  // a frosted effect. The blur is a hint, not the mechanism.
+  &[data-scrolled] {
+    background-color: $c-glass;
+    border-bottom-color: $c-rule;
+    -webkit-backdrop-filter: saturate(160%) blur(14px);
+    backdrop-filter: saturate(160%) blur(14px);
+  }
+
+  &[data-open] {
+    background-color: $c-bg;
+    border-bottom-color: $c-rule;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 
-.logo {
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: $c-text-primary;
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-5;
+  height: $nav-height;
+}
 
-  span {
-    color: $c-text-muted;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  flex-shrink: 0;
+}
+
+.brandMark {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  font-family: $font-mono;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #0a0a0c;
+  background-color: $c-ink;
+  border-radius: $radius-sm;
+}
+
+.brandName {
+  font-size: $text-sm;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: $c-ink;
+
+  // Kept visible at every width: hiding it left the brand link with no
+  // accessible name on mobile. The CTA is what gets dropped instead.
+  @media (max-width: 420px) {
+    font-size: $text-xs;
+  }
+}
+
+// ── Desktop nav ─────────────────────────────────────────────────
+.nav {
+  @media (max-width: $bp-md) {
+    display: none;
   }
 }
 
 .links {
   display: flex;
-  gap: 28px;
+  align-items: center;
+  gap: $space-1;
+}
 
-  a {
-    font-size: 13px;
-    color: $c-text-secondary;
-    letter-spacing: 0.02em;
-    transition: color $transition-base;
-    text-decoration: none;
+.link {
+  display: block;
+  padding: 6px 11px;
+  font-size: $text-sm;
+  color: $c-ink-muted;
+  border-radius: $radius-sm;
+  transition:
+    color $dur-fast $ease-out,
+    background-color $dur-fast $ease-out;
 
-    &:hover {
-      color: $c-text-primary;
-    }
+  &:hover {
+    color: $c-ink;
+    background-color: rgba(255, 255, 255, 0.04);
   }
 
-  @media (max-width: $bp-mobile) {
-    display: none;
+  &[aria-current='true'] {
+    color: $c-ink;
+    background-color: rgba(255, 255, 255, 0.06);
   }
 }
 
-.right {
+.actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: $space-3;
+  flex-shrink: 0;
 }
 
-.kbdHint {
+.paletteHint {
   display: flex;
+  align-items: center;
   gap: 3px;
+  padding: 4px 6px;
+  border: 1px solid $c-rule-strong;
+  border-radius: $radius-sm;
+  color: $c-ink-faint;
+  transition:
+    color $dur-fast $ease-out,
+    border-color $dur-fast $ease-out;
 
-  kbd {
-    font-size: 11px;
-    font-family: $font-mono;
-    color: $c-text-muted;
-    background: $c-bg-3;
-    border: 1px solid $c-border-md;
-    border-radius: 3px;
-    padding: 2px 5px;
+  &:hover {
+    color: $c-ink-soft;
+    border-color: $c-rule-active;
   }
 
-  @media (max-width: $bp-mobile) {
+  kbd {
+    font-family: $font-mono;
+    font-size: 10px;
+    line-height: 1;
+  }
+
+  @media (max-width: $bp-md) {
     display: none;
   }
 }
 
 .cta {
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: $c-text-primary;
-  border: 1px solid $c-border-md;
-  padding: 7px 16px;
-  border-radius: 4px;
-  text-decoration: none;
-  transition:
-    background $transition-base,
-    border-color $transition-base;
+  padding: 7px 14px;
+  font-size: $text-xs;
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: $c-border-hi;
-  }
-
-  @media (max-width: $bp-mobile) {
+  @media (max-width: $bp-sm) {
     display: none;
   }
 }
 
-// ─── MOBILE MENU BUTTON ─────────────────────────────────────────
+// ── Mobile trigger ──────────────────────────────────────────────
 .menuButton {
   display: none;
-  width: 40px;
-  height: 40px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  border: 1px solid $c-border-md;
-  background: transparent;
+  padding: $space-1;
+  color: $c-ink;
 
-  @media (max-width: $bp-mobile) {
-    display: flex;
+  @media (max-width: $bp-md) {
+    display: block;
   }
 }
 
-.menuIcon {
+.menuBars {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 5px;
-  width: 16px;
+  width: 22px;
+  height: 22px;
 
   span {
-    display: block;
     height: 1.5px;
-    width: 100%;
-    background: $c-text-primary;
-    transition: transform $transition-base, opacity $transition-base;
-    transform-origin: center;
+    background-color: currentColor;
+    border-radius: 1px;
+    transition: transform $dur-base $ease-out;
   }
 }
 
-.menuIconOpen {
-  span:first-child {
-    transform: translateY(3.25px) rotate(45deg);
-  }
-  span:last-child {
-    transform: translateY(-3.25px) rotate(-45deg);
-  }
+.header[data-open] .menuBars span:first-child {
+  transform: translateY(3.25px) rotate(45deg);
 }
 
-// ─── MOBILE MENU PANEL ──────────────────────────────────────────
+.header[data-open] .menuBars span:last-child {
+  transform: translateY(-3.25px) rotate(-45deg);
+}
+
+// ── Mobile menu ─────────────────────────────────────────────────
 .mobileMenu {
-  position: fixed;
-  top: $nav-height;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(9, 9, 10, 0.98);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 32px $container-pad;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity $transition-base, visibility $transition-base;
+  display: none;
+  flex-direction: column;
+  gap: $space-5;
+  padding: $space-5 $container-pad $space-7;
+  border-top: 1px solid $c-rule;
 
-  ul {
+  @media (max-width: $bp-md) {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
   }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.mobileLinks {
+  display: flex;
+  flex-direction: column;
 
   li {
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    border-bottom: 1px solid $c-rule;
+    animation: slideIn $dur-base $ease-out both;
+    animation-delay: calc(var(--i) * 35ms);
   }
 
   a {
-    display: block;
-    padding: 14px 0;
-    font-size: 22px;
+    display: flex;
+    align-items: baseline;
+    gap: $space-4;
+    padding-block: $space-3;
+    font-size: $text-xl;
     font-weight: 500;
-    letter-spacing: -0.01em;
-    color: $c-text-primary;
-    text-decoration: none;
-    border-bottom: 1px solid $c-border;
+    letter-spacing: -0.02em;
+    color: $c-ink;
   }
 }
 
-.mobileMenuOpen {
-  opacity: 1;
-  visibility: visible;
+.mobileIndex {
+  font-family: $font-mono;
+  font-size: 10px;
+  color: $c-ink-faint;
+}
 
-  li {
+.mobileFoot {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mobileMail {
+  font-size: $text-sm;
+  color: $c-ink-soft;
+  text-decoration: underline;
+  text-decoration-color: $c-rule-active;
+  text-underline-offset: 4px;
+}
+
+.mobileNote {
+  font-family: $font-mono;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $c-live;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
-}
-
-.mobileCta {
-  color: $c-accent;
 }

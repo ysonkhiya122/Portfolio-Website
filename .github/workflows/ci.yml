@@ -6,10 +6,19 @@ on:
   pull_request:
     branches: [main]
 
+# Cancel superseded runs on the same ref — saves minutes on rapid pushes.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   verify:
-    name: Lint · Test · Build
+    name: Validate · Lint · Test · Build · Budget
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
@@ -21,21 +30,97 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      - name: Install dependencies
+      - name: Install (clean, reproducible)
         run: npm ci
+
+      - name: Validate content
+        run: npm run validate:content
 
       - name: Lint
         run: npm run lint
 
-      - name: Test
-        run: npm test -- --ci --coverage
+      - name: Format check
+        run: npm run format:check
 
-      - name: Build
+      - name: Type-check and build
         run: npm run build
 
-      - name: Upload build artifact
+      - name: Test with coverage
+        run: npm test -- --ci --coverage
+
+      - name: Performance budget
+        run: npm run size
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage
+          retention-days: 7
+
+      - name: Upload build
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist
           retention-days: 7
+
+  security:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      # Production dependencies must be clean. Dev-only advisories are
+      # reported but do not block a deploy of a static site.
+      - name: Audit production dependencies
+        run: npm run audit:prod
+
+      - name: Report all advisories
+        if: always()
+        run: npm audit || true
+
+  lighthouse:
+    name: Lighthouse budget
+    runs-on: ubuntu-latest
+    needs: verify
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Run Lighthouse CI
+        run: |
+          npm i -g @lhci/cli@0.15.x
+          lhci autorun \
+            --collect.staticDistDir=./dist \
+            --collect.url=http://localhost/ \
+            --collect.numberOfRuns=1 \
+            --assert.assertions.categories:performance=0.95 \
+            --assert.assertions.categories:accessibility=1 \
+            --assert.assertions.categories:best-practices=0.95 \
+            --assert.assertions.categories:seo=0.95 \
+            --assert.assertions.largest-contentful-paint=2000 \
+            --assert.assertions.cumulative-layout-shift=0.05 \
+            --assert.assertions.total-blocking-time=150 \
+            --upload.target=temporary-public-storage
+        continue-on-error: true

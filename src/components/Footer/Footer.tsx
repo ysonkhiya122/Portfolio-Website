@@ -1,3 +1,4 @@
+import { site } from '@/content/site'
 import styles from './Footer.module.scss'
 
 export default function Footer() {
@@ -5,15 +6,26 @@ export default function Footer() {
 
   return (
     <footer className={styles.footer}>
-      <div className="container">
-        <div className={styles.inner}>
+      <div className={`container ${styles.inner}`}>
+        <div className={styles.left}>
+          <p className={styles.mark}>{site.initials}</p>
           <p className={styles.copy}>
-            © {year} Yash Sonkhiya. All rights reserved.
-          </p>
-          <p className={styles.built}>
-            <span>Built with </span>React · TypeScript · SCSS
+            © {year} {site.name}. Built in Delhi.
           </p>
         </div>
+
+        <nav className={styles.links} aria-label="Elsewhere">
+          <a href={site.links.github} target="_blank" rel="noopener noreferrer">
+            GitHub
+          </a>
+          <a href={site.links.linkedin} target="_blank" rel="noopener noreferrer">
+            LinkedIn
+          </a>
+          <a href={`mailto:${site.email}`}>Email</a>
+          <a href="/yash-sonkhiya-cv.pdf">CV</a>
+        </nav>
+
+        <p className={styles.stack}>React 18 · TypeScript · Vite 7 · no UI kit</p>
       </div>
     </footer>
   )

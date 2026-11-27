@@ -1,80 +1,146 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#09090a" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#08080a" />
 
-    <!-- Primary meta -->
     <title>Yash Sonkhiya — Senior Frontend Engineer</title>
     <meta
       name="description"
-      content="Yash Sonkhiya — Senior Frontend Engineer specialising in React, TypeScript, and enterprise-scale web applications."
+      content="Senior frontend engineer in Delhi building real-time, enterprise-scale React and TypeScript systems across seven European markets. Case studies, decisions and trade-offs."
     />
     <meta name="author" content="Yash Sonkhiya" />
-    <link rel="canonical" href="https://yash-sonkhiya.netlify.app/" />
+    <link rel="canonical" href="https://yash-sonkhiya.com/" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://yash-sonkhiya.netlify.app/" />
+    <meta property="og:site_name" content="Yash Sonkhiya" />
+    <meta property="og:url" content="https://yash-sonkhiya.com/" />
     <meta property="og:title" content="Yash Sonkhiya — Senior Frontend Engineer" />
     <meta
       property="og:description"
-      content="Building enterprise-scale React applications. 2+ years of production ownership across real-time systems, auth, and GenAI-driven workflows."
+      content="Real-time dispatch for seven European markets, enterprise dashboards, and internal tools that replace spreadsheets. The decisions behind them, written up properly."
     />
-    <meta property="og:image" content="https://yash-sonkhiya.netlify.app/og-image.png" />
+    <meta property="og:image" content="https://yash-sonkhiya.com/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Yash Sonkhiya — Senior Frontend Engineer, React and TypeScript" />
+    <meta
+      property="og:image:alt"
+      content="Yash Sonkhiya, Senior Frontend Engineer — React, TypeScript, real-time systems"
+    />
+    <meta property="og:locale" content="en_IN" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Yash Sonkhiya — Senior Frontend Engineer" />
     <meta
       name="twitter:description"
-      content="Building enterprise-scale React applications. 2+ years of production ownership across real-time systems, auth, and GenAI-driven workflows."
+      content="Real-time dispatch for seven European markets, enterprise dashboards, and internal tools that replace spreadsheets."
     />
-    <meta name="twitter:image" content="https://yash-sonkhiya.netlify.app/og-image.png" />
+    <meta name="twitter:image" content="https://yash-sonkhiya.com/og-image.png" />
 
-    <!-- Icons -->
+    <!-- Above-the-fold fonts are preloaded by the `preloadFonts` Vite
+         plugin (see vite.config.ts), which injects hashed hrefs at build
+         time. Without it the hero re-lays-out on font swap (CLS 0.16). -->
+
+    <!-- Icons and manifest -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
-    <!-- Fonts are self-hosted via @fontsource (see src/main.tsx) —
-         no third-party request chain, no render-blocking CSS fetch. -->
+    <!--
+      The page renders meaningful content without JavaScript: the
+      resume content is in the markup, and the reveal animations are
+      opt-in via the `js` class added in main.tsx.
+    -->
 
-    <!-- Structured data -->
+    <!-- Structured data: Person -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Person",
         "name": "Yash Sonkhiya",
         "jobTitle": "Senior Frontend Engineer",
-        "url": "https://yash-sonkhiya.netlify.app/",
+        "url": "https://yash-sonkhiya.com/",
         "email": "mailto:yashsonkhiya2195@gmail.com",
-        "image": "https://yash-sonkhiya.netlify.app/og-image.png",
-        "sameAs": [
-          "https://github.com/ysonkhiya122",
-          "https://linkedin.com/in/yash-sonkhiya"
-        ],
-        "knowsAbout": [
-          "React",
-          "TypeScript",
-          "Redux Toolkit",
-          "SignalR",
-          "Frontend Architecture",
-          "AI-assisted Development"
-        ],
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Delhi",
+          "addressCountry": "IN"
+        },
+        "worksFor": { "@type": "Organization", "name": "Accenture" },
         "alumniOf": {
           "@type": "CollegeOrUniversity",
           "name": "Noida Institute of Engineering & Technology"
-        }
+        },
+        "sameAs": ["https://github.com/ysonkhiya122", "https://linkedin.com/in/yash-sonkhiya"],
+        "knowsAbout": [
+          "React",
+          "TypeScript",
+          "Real-time web applications",
+          "WebSockets",
+          "Frontend architecture",
+          "Web accessibility",
+          "Core Web Vitals"
+        ]
       }
     </script>
   </head>
   <body>
     <div id="root"></div>
+
+    <!--
+      No-JS fallback. Progressive enhancement means the visitor still
+      gets the essentials: who this is, what they do, and how to reach
+      them. React replaces this on mount.
+    -->
+    <noscript>
+      <div
+        style="
+          max-width: 44rem;
+          margin: 4rem auto;
+          padding: 0 1.25rem;
+          font-family: system-ui, sans-serif;
+          line-height: 1.6;
+          color: #f2efe9;
+          background: #08080a;
+        "
+      >
+        <h1 style="font-size: 2rem; letter-spacing: -0.03em">Yash Sonkhiya</h1>
+        <p style="color: #a5a29b">
+          Senior Frontend Engineer · React &amp; TypeScript · Delhi, India
+        </p>
+        <p style="color: #a5a29b">
+          This site needs JavaScript for the interactive case studies. The essentials are
+          below.
+        </p>
+        <ul style="list-style: none; padding: 0; margin: 2rem 0">
+          <li style="padding: 0.5rem 0; border-top: 1px solid #ffffff14">
+            <a href="mailto:yashsonkhiya2195@gmail.com" style="color: #e8a33d"
+              >yashsonkhiya2195@gmail.com</a
+            >
+          </li>
+          <li style="padding: 0.5rem 0; border-top: 1px solid #ffffff14">
+            <a href="https://linkedin.com/in/yash-sonkhiya" style="color: #e8a33d"
+              >linkedin.com/in/yash-sonkhiya</a
+            >
+          </li>
+          <li style="padding: 0.5rem 0; border-top: 1px solid #ffffff14">
+            <a href="https://github.com/ysonkhiya122" style="color: #e8a33d"
+              >github.com/ysonkhiya122</a
+            >
+          </li>
+        </ul>
+        <p style="color: #837f78; font-size: 0.875rem">
+          Frontend lead on four production React applications for a European field-service
+          client across seven markets. Promoted to senior in 18 months.
+        </p>
+      </div>
+    </noscript>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

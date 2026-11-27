@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#08080a">
+  <title>Migrating React 16 to 19 by route, not by component — Yash Sonkhiya</title>
+  <meta name="description" content="A component-by-component migration means two versions of React in one tree. Cutting over per route let both versions ship side by side with no regressions.">
+  <link rel="canonical" href="https://yash-sonkhiya.com/notes/react-16-to-19-by-route/">
+  <meta name="author" content="Yash Sonkhiya">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Migrating React 16 to 19 by route, not by component">
+  <meta property="og:description" content="A component-by-component migration means two versions of React in one tree. Cutting over per route let both versions ship side by side with no regressions.">
+  <meta property="og:url" content="https://yash-sonkhiya.com/notes/react-16-to-19-by-route/">
+  <meta property="og:image" content="https://yash-sonkhiya.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/notes/note.css">
+  <script type="application/ld+json">
+    {
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Migrating React 16 to 19 by route, not by component",
+  "description": "A component-by-component migration means two versions of React in one tree. Cutting over per route let both versions ship side by side with no regressions.",
+  "datePublished": "2026-07-21",
+  "author": {
+    "@type": "Person",
+    "name": "Yash Sonkhiya",
+    "url": "https://yash-sonkhiya.com"
+  },
+  "keywords": "react, migration",
+  "url": "https://yash-sonkhiya.com/notes/react-16-to-19-by-route/"
+}
+  </script>
+</head>
+<body>
+  <main class="wrap">
+    <a class="back" href="/#notes">&larr; All notes</a>
+    <p class="meta">
+      <time datetime="2026-07-21">Jul 2026</time>
+      <span class="dot">&middot;</span>
+      <span>5 min read</span>
+    </p>
+    <h1>Migrating React 16 to 19 by route, not by component</h1>
+    <p class="summary">A component-by-component migration means two versions of React in one tree. Cutting over per route let both versions ship side by side with no regressions.</p>
+    <div class="tags"><span class="tag">react</span><span class="tag">migration</span></div>
+    <div class="rule"></div>
+    <p>Two enterprise applications needed to leave React 16. The obvious plan — upgrade the dependency and fix errors until the build passes — produces a single unmergeable branch and a release freeze measured in weeks.</p>
+        <p>We had an advantage: the applications were already route-split. That made a different strategy possible.</p>
+        <h2>The approach</h2>
+        <p>A feature flag selected the React tree per route. Migrated routes rendered under React 19; everything else stayed on 16. The shell owned the router and the auth provider, and those boundaries were the only places the two trees touched.</p>
+        <p>The order was deliberate. Start with a route that is important enough to prove the approach and shallow enough to finish in a week. We picked the settings surface. Success there bought credibility for the routes that actually carried risk.</p>
+        <h2>What actually broke</h2>
+        <p>Not the lifecycle methods — a codemod handled most of those. What broke was implicit behaviour:</p>
+        <p>String refs and `findDOMNode` usage in a shared charting wrapper that three teams imported. Nobody owned it, so nobody had looked at it in years.</p>
+        <p>A context consumer relying on the legacy `contextTypes` API, in a component that appeared in exactly one route and had never been touched.</p>
+        <p>Test utilities that assumed `ReactDOM.render`. These were the highest volume of changes and the lowest risk, which is the best kind of work to parallelise.</p>
+        <h2>Rules that kept it honest</h2>
+        <p>No route was marked complete until its Jest coverage was at or above the pre-migration number. We were not going to trade test coverage for a dependency version.</p>
+        <p>Every flag was removed within two sprints of its route going fully live. A permanent flag is technical debt that looks like flexibility.</p>
+        <h2>The result</h2>
+        <p>Zero regressions reached production across two applications. The thing that made that possible was not skill, it was sequencing: making the blast radius of any single change small enough that a mistake was cheap.</p>
+    <p class="footer">
+      Written by <a href="/">Yash Sonkhiya</a>, frontend engineer.
+      Open to senior frontend roles —
+      <a href="mailto:yashsonkhiya2195@gmail.com">yashsonkhiya2195@gmail.com</a>
+      <br>
+      <a class="cta" href="/#work">See the case studies</a>
+    </p>
+  </main>
+</body>
+</html>

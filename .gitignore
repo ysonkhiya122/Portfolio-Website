@@ -1,21 +1,91 @@
-# Dependencies
-node_modules/
+# ─────────────────────────────────────────────────────────────
+#  Dependencies
+# ─────────────────────────────────────────────────────────────
+node_modules
+.pnp
+.pnp.*
+.yarn/cache
+.yarn/install-state.gz
 
-# Build output
-dist/
-coverage/
+# ─────────────────────────────────────────────────────────────
+#  Build output
+# ─────────────────────────────────────────────────────────────
+dist
+dist-ssr
+*.local
 
-# Logs
-*.log
-npm-debug.log*
-
-# Editor / OS
-.vscode/*
-!.vscode/extensions.json
-.idea/
-.DS_Store
-
-# Env
+# ─────────────────────────────────────────────────────────────
+#  Secrets and environment
+#
+#  Nothing here is currently used by the site (it has no server-side
+#  env vars), but the patterns cost nothing and stop the one mistake
+#  that cannot be undone by a follow-up commit.
+# ─────────────────────────────────────────────────────────────
 .env
 .env.*
 !.env.example
+.npmrc
+*.pem
+*.key
+.netlify/state.json
+
+# ─────────────────────────────────────────────────────────────
+#  Test and tooling artefacts
+# ─────────────────────────────────────────────────────────────
+coverage
+*.tsbuildinfo
+.eslintcache
+.cache
+.lighthouseci
+lh-report*.json
+lighthouse-report*.html
+playwright-report
+test-results
+stats.html
+
+# ─────────────────────────────────────────────────────────────
+#  Editor and OS
+# ─────────────────────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ─────────────────────────────────────────────────────────────
+#  Logs
+# ─────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ─────────────────────────────────────────────────────────────
+#  Local screenshot / QA output from scripts/visual-check.mjs
+# ─────────────────────────────────────────────────────────────
+shots
+
+# ─────────────────────────────────────────────────────────────
+#  Throwaway scripts
+#
+#  Put ad-hoc scripts in .scratch/ rather than at the repo root. Naming
+#  conventions were tried first and failed on the obvious case: they
+#  caught `my-check.mjs` but not `verify.mjs`, which is the name a
+#  scratch file actually gets. A directory cannot be guessed wrong.
+#
+#  Deliberately NOT a blanket `*.mjs` — jest.config.mjs is a real build
+#  input at the root, and a broad rule would silently untrack it. The
+#  patterns below are anchored to the root with a leading `/` so they
+#  never touch scripts/ or src/.
+# ─────────────────────────────────────────────────────────────
+.scratch/
+/*.shot.mjs
+/shoot*.mjs
+/probe*.mjs
+/*.local.mjs
+/_*.mjs

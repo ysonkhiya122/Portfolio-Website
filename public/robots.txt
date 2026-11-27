@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /assets/
 
-Sitemap: https://yash-sonkhiya.netlify.app/sitemap.xml
+Sitemap: https://yash-sonkhiya.com/sitemap.xml
