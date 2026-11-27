@@ -649,3 +649,52 @@ worse than no gate; it now compiles unconditionally.
 from the gate's `CONTENT_KEYS` and from `contentSchema`, so the
 most-edited copy on the site bypassed validation entirely. It now has a
 schema, and the house-rule check actually receives its text.
+
+---
+
+## Part 10 — The build required a browser, and the CV could lie
+
+Two defects in the tooling around the CV, both introduced by wiring
+`build:cv` into `npm run build` in Part 7 without following through.
+
+**A production build hard-required Chromium.** `build-cv.mjs` called
+`chromium.launch()` unguarded. On any host that does not install a
+browser — Netlify's build image does not by default — `npm run build`
+would throw and the deploy would fail, for an artefact that is already
+committed. The PDF is a generated output, not a build input. It now
+degrades with a warning and falls back to the committed copy, so a real
+deploy is never blocked by a missing browser.
+
+**"Always current" was an assertion, not a check.** The CV footer claims
+it is generated from the content layer, and `docs/CONTENT.md` tells you
+it cannot drift. Nothing verified that. `scripts/validate-cv.mjs` now
+hashes the HTML the PDF is rendered from — computed by
+`build-cv.mjs --hash-only`, which needs no browser — and compares it with
+the hash recorded at the last real render. Mismatch fails
+`npm run validate` with the one-line fix. Verified by editing an
+Experience highlight and watching the gate fail, then restoring it.
+
+### A claim I made and had to retract
+
+While building that, I asserted the CV generator had a stale-bundle cache
+bug and "fixed" it. It did not: an edit I used as evidence had touched a
+case-study `context` field, which the CV does not render, so an unchanged
+hash was the correct result. Testing with a field the CV actually renders
+changed the hash as expected. The generator recompiles on every run.
+
+The lesson is narrow and worth recording: verify a hypothesis against an
+input the system provably consumes. An unchanged output from an unread
+input is not a bug.
+
+### Final gate
+
+`npm run validate` now runs six gates before the build:
+
+| Gate                    | Catches                                       |
+| ----------------------- | --------------------------------------------- |
+| `validate:content`      | Schema, house rules, hand-typed durations     |
+| `validate:links`        | Dead assets, anchors, unbuilt note pages      |
+| `validate:cv`           | A CV that no longer matches the site          |
+| `lint` / `format:check` | Style, zero warnings tolerated                |
+| `test`                  | 84 tests, including an axe pass per component |
+| `size`                  | Bundle budgets                                |

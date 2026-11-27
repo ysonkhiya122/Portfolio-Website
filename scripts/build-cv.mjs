@@ -11,7 +11,8 @@
  *
  *   npm run build:cv
  */
-import { mkdir } from 'node:fs/promises'
+import { createHash } from 'node:crypto'
+import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -225,20 +226,54 @@ async function main() {
 </body>
 </html>`
 
-  const { chromium } = await import('playwright')
-  const browser = await chromium.launch()
-  const page = await browser.newPage()
-  await page.setContent(html, { waitUntil: 'load' })
+  const output = path.join(root, 'public', 'yash-sonkhiya-cv.pdf')
+  const fingerprintPath = path.join(root, 'cv-content-hash.txt')
 
-  await page.pdf({
-    path: path.join(root, 'public', 'yash-sonkhiya-cv.pdf'),
-    format: 'A4',
-    printBackground: true,
-    displayHeaderFooter: false,
-  })
+  // The PDF is rendered from this exact HTML, so the HTML's hash is a
+  // reliable freshness fingerprint. Recorded on every successful render
+  // and compared by scripts/validate-cv.mjs.
+  const fingerprint = createHash('sha256').update(html).digest('hex')
 
-  await browser.close()
-  console.log('✔ public/yash-sonkhiya-cv.pdf written')
+  if (process.argv.includes('--hash-only')) {
+    console.log(fingerprint)
+    return
+  }
+
+  let browser
+  try {
+    const { chromium } = await import('playwright')
+    browser = await chromium.launch()
+  } catch (error) {
+    // The CV is a generated artefact, not a build input: the site ships the
+    // committed PDF from public/. Regenerating it on every build is a
+    // convenience, but making the build depend on a Chromium binary breaks
+    // deployment on any host that does not install one (Netlify's image
+    // does not by default). Degrade to the committed copy and say so
+    // loudly enough that a stale CV fails `npm run validate`, which is
+    // where freshness is actually enforced.
+    const reason = error instanceof Error ? error.message.split('\n')[0] : String(error)
+    console.warn(
+      `\n⚠  build:cv skipped — no Chromium available (${reason})\n` +
+        `   Using the committed public/yash-sonkhiya-cv.pdf.\n` +
+        `   Run 'npx playwright install chromium' to regenerate it.\n`,
+    )
+    return
+  }
+
+  try {
+    const page = await browser.newPage()
+    await page.setContent(html, { waitUntil: 'load' })
+    await page.pdf({
+      path: output,
+      format: 'A4',
+      printBackground: true,
+      displayHeaderFooter: false,
+    })
+    await writeFile(fingerprintPath, `${fingerprint}\n`, 'utf8')
+    console.log('✔ public/yash-sonkhiya-cv.pdf written')
+  } finally {
+    await browser.close()
+  }
 }
 
 main().catch((error) => {
