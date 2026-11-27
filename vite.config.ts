@@ -87,7 +87,13 @@ export default defineConfig(({ mode }) => ({
   build: {
     target: 'es2022',
     cssTarget: 'chrome111',
-    sourcemap: mode !== 'production' ? true : 'hidden',
+    // No source maps in production. 'hidden' still *writes* the .map files
+    // into dist/ (it only omits the sourceMappingURL comment), and there is
+    // no error tracker to upload them to — so they were pure dead weight and
+    // an accidental full-source disclosure: 479 kB of .map containing
+    // sourcesContent, publicly fetchable from /assets/. Keep them in
+    // development where they are actually useful.
+    sourcemap: mode !== 'production',
     // Warn early if a single chunk gets heavy.
     chunkSizeWarningLimit: 180,
     rollupOptions: {
